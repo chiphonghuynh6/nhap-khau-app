@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý nhập khẩu</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-4">
+  <div class="max-w-screen-xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4">Quản lý nhập khẩu</h1>
+
+    <form id="importForm" class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-white p-4 rounded shadow">
+      <select name="FACT NO" class="p-2 border rounded" required>
+        <option value="">FACT NO</option>
+        <option>18A</option><option>B0SZ</option><option>B0M1</option><option>B0M2</option>
+      </select>
+      <select name="LOẠI HÌNH" class="p-2 border rounded" required>
+        <option value="">LOẠI HÌNH</option>
+        <option>A12</option><option>E21</option>
+      </select>
+      <select name="TYPE" class="p-2 border rounded" required>
+        <option value="">TYPE</option>
+        <option>CONT</option><option>CFS</option><option>NGOAI QUAN</option><option>BY TRUCK</option><option>AIR</option><option>DHL</option>
+      </select>
+      <input type="text" name="FWD" placeholder="FWD" class="p-2 border rounded">
+      <input type="text" name="BILL NO" placeholder="BILL NO" class="p-2 border rounded">
+      <input type="date" name="BILL DATE" placeholder="BILL DATE" class="p-2 border rounded">
+      <input type="number" name="PACKAGES" placeholder="PACKAGES" class="p-2 border rounded">
+      <input type="number" name="GW" placeholder="GW" class="p-2 border rounded">
+      <input type="number" name="CBM" placeholder="CBM" class="p-2 border rounded">
+      <input type="text" name="CTN NO" placeholder="CTN NO" class="p-2 border rounded">
+      <input type="text" name="PK/GW/CBM" placeholder="PK/GW/CBM" class="p-2 border rounded">
+      <select name="ORIGIN" class="p-2 border rounded">
+        <option value="">ORIGIN</option>
+        <option>CN</option><option>TW</option><option>US</option><option>SA</option><option>BE</option><option>GE</option><option>JP</option><option>KR</option><option>VN</option>
+      </select>
+      <input type="text" name="SUPPLIER" placeholder="SUPPLIER" class="p-2 border rounded">
+      <input type="text" name="INV NO" placeholder="INV NO" class="p-2 border rounded">
+      <input type="date" name="INV DATE" placeholder="INV DATE" class="p-2 border rounded">
+      <input type="number" name="AMOUNT" placeholder="AMOUNT" class="p-2 border rounded">
+      <select name="TERM" class="p-2 border rounded">
+        <option value="">TERM</option>
+        <option>CIF</option><option>FOB</option><option>C&F</option><option>FCA</option><option>EXW</option><option>DAP</option><option>DAT</option><option>CIP</option><option>CPT</option>
+      </select>
+      <input type="date" name="ETA DATE" placeholder="ETA DATE" class="p-2 border rounded">
+      <input type="text" name="ATC" placeholder="ATC" class="p-2 border rounded">
+      <input type="file" name="pdfFile" accept="application/pdf" class="p-2 border rounded">
+      <button type="submit" class="col-span-full bg-blue-600 text-white py-2 rounded">Thêm</button>
+    </form>
+
+    <div class="my-4">
+      <button onclick="exportAtcEmpty()" class="bg-green-600 text-white px-4 py-2 rounded">Xuất Excel lô hàng ATC trống</button>
+    </div>
+
+    <div id="dataTable" class="overflow-auto bg-white p-4 rounded shadow mt-4"></div>
+  </div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbw3CPEwKe1Y1iPCpnWHfF9jMXLpp4Zaob_ii8uNv5bzJ8UPXpekjdC6tkKMuyVROGh9jQ/exec';
+
+async function fetchData() {
+  const res = await fetch(API_URL);
+  const data = await res.json();
+  renderTable(data);
+}
+
+function renderTable(data) {
+  const container = document.getElementById('dataTable');
+  const table = document.createElement('table');
+  table.className = 'min-w-full border border-gray-300';
+  if (data.length === 0) return (container.innerHTML = '<p>Không có dữ liệu.</p>');
+
+  const headers = Object.keys(data[0]);
+  table.innerHTML = `
+    <thead>
+      <tr>${headers.map(h => `<th class='border px-2 py-1 bg-gray-200'>${h}</th>`).join('')}<th>Hành động</th></tr>
+    </thead>
+    <tbody>
+      ${data.map((row, i) => `
+        <tr>
+          ${headers.map(h => `<td class='border px-2 py-1'>${row[h]}</td>`).join('')}
+          <td class='border px-2 py-1'>
+            <button onclick='deleteRow(${i+1})' class='text-red-500'>Xoá</button>
+          </td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+  container.innerHTML = '';
+  container.appendChild(table);
+}
+
+async function deleteRow(index) {
+  if (!confirm('Xác nhận xoá?')) return;
+  await fetch(API_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'delete', index })
+  });
+  fetchData();
+}
+
+async function exportAtcEmpty() {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'exportAtcEmpty' })
+  });
+  const url = await res.text();
+  window.open(url, '_blank');
+}
+
+// Thêm mới
+const form = document.getElementById('importForm');
+form.onsubmit = async e => {
+  e.preventDefault();
+  const formData = new FormData(form);
+  const obj = {};
+  formData.forEach((v, k) => { if (k !== 'pdfFile') obj[k] = v });
+
+  const file = formData.get('pdfFile');
+  let fileData = null;
+  if (file && file.size > 0) {
+    const b64 = await file.arrayBuffer().then(buf => btoa(String.fromCharCode(...new Uint8Array(buf))));
+    fileData = {
+      name: file.name,
+      mimeType: file.type,
+      data: b64
+    };
+  }
+
+  await fetch(API_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'add', data: obj, file: fileData })
+  });
+  form.reset();
+  fetchData();
+};
+
+fetchData();
+</script>
+</body>
+</html>
