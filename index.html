@@ -168,11 +168,14 @@
     </button>
   </div>
 </form>
+<div id="dataTable" class="overflow-x-auto mt-6 bg-white rounded shadow p-4"></div>
+  </div>
 
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbwAEpr2QboZr-0FpLUHyJsA-rpKvnsO0Ks6-na2qv96SxwtJQU1fcn327HMd70XymjMaw/exec';
 let editingIndex = -1;
+
 async function fetchData() {
   const res = await fetch(API_URL);
   const data = await res.json();
@@ -195,9 +198,9 @@ function renderTable(data) {
         <tr>
           ${headers.map(h => `<td class='border px-2 py-1'>${row[h]}</td>`).join('')}
           <td class='border px-2 py-1'>
-  	<button onclick='editRow(${i})' class='text-blue-500 mr-2'>Sửa</button>
-  	<button onclick='deleteRow(${i+1})' class='text-red-500'>Xoá</button>
-	</td>
+            <button onclick='editRow(${i})' class='text-blue-500 mr-2'>Sửa</button>
+            <button onclick='deleteRow(${i + 1})' class='text-red-500'>Xoá</button>
+          </td>
         </tr>
       `).join('')}
     </tbody>
@@ -214,14 +217,13 @@ async function deleteRow(index) {
   });
   fetchData();
 }
-	
+
 function editRow(index) {
   editingIndex = index;
   const row = document.querySelectorAll("#dataTable table tbody tr")[index];
   const cells = row.querySelectorAll("td");
   const headers = Array.from(document.querySelectorAll("#dataTable table thead th")).map(th => th.innerText);
 
-  // Lặp qua form và điền dữ liệu tương ứng
   const form = document.getElementById("importForm");
   headers.forEach((header, i) => {
     if (header === "Hành động") return;
@@ -229,10 +231,8 @@ function editRow(index) {
     if (input) input.value = cells[i].innerText;
   });
 
-  // Cuộn lên đầu trang để thấy form
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
-
 
 async function exportAtcEmpty() {
   const res = await fetch(API_URL, {
@@ -243,7 +243,6 @@ async function exportAtcEmpty() {
   window.open(url, '_blank');
 }
 
-// Thêm mới
 const form = document.getElementById('importForm');
 form.onsubmit = async e => {
   e.preventDefault();
@@ -263,14 +262,12 @@ form.onsubmit = async e => {
   }
 
   if (editingIndex > -1) {
-    // Sửa
     await fetch(API_URL, {
       method: 'POST',
-      body: JSON.stringify({ action: 'update', index: editingIndex + 2, data: obj, file: fileData }) // +2 để bỏ header và dùng dòng Google Sheet chính xác
+      body: JSON.stringify({ action: 'update', index: editingIndex + 2, data: obj, file: fileData })
     });
     editingIndex = -1;
   } else {
-    // Thêm mới
     await fetch(API_URL, {
       method: 'POST',
       body: JSON.stringify({ action: 'add', data: obj, file: fileData })
@@ -280,7 +277,6 @@ form.onsubmit = async e => {
   form.reset();
   fetchData();
 };
-
 
 fetchData();
 </script>
