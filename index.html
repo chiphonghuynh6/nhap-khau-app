@@ -14,7 +14,7 @@
       <fieldset class="border p-4">
         <legend class="font-semibold">Thông tin chung</legend>
         <label>GET DOCS <input type="date" name="GET DOCS" class="w-full p-2 border border-black rounded"/></label>
-        <label>DEC NO: <input type="text" name="DEC NO" class="w-full p-2 border border-black rounded"/></label>
+        <label>DEC NO: <input type="text" name="DEC NO" class="w-full p-2 border border-black rounded" readonly/></label>
         <label>FACT NO: 
           <select name="FACT NO" class="w-full p-2 border border-black rounded">
             <option></option><option>18A</option><option>B0SZ</option><option>B0M1</option><option>B0M2</option>
@@ -143,6 +143,24 @@ async function exportAtcEmpty() {
   const url = await res.text();
   window.open(url, '_blank');
 }
+
+document.querySelector('[name="LOẠI HÌNH"]').addEventListener('change', async e => {
+  const loaiHinh = e.target.value;
+  if (!loaiHinh || !['A12', 'E21', 'H11'].includes(loaiHinh)) return;
+
+  const res = await fetch(API_URL);
+  const data = await res.json();
+
+  const count = data.filter(row => row['LOẠI HÌNH'] === loaiHinh).length + 1;
+  let stt = count.toString().padStart(3, '0'); // CH001...
+
+  let decNo = '';
+  if (loaiHinh === 'A12') decNo = `CH${stt}KD-25`;
+  else if (loaiHinh === 'E21') decNo = `CH${stt}-25`;
+  else if (loaiHinh === 'H11') decNo = `CH${stt}-25PMD`;
+
+  document.querySelector('[name="DEC NO"]').value = decNo;
+});
 
 const form = document.getElementById('importForm');
 form.onsubmit = async e => {
