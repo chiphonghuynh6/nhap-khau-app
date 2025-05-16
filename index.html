@@ -228,21 +228,38 @@ function renderTable(data) {
   const container = document.getElementById('dataTable');
   const table = document.createElement('table');
   table.className = 'min-w-full border border-gray-300';
+
   if (data.length === 0) return (container.innerHTML = '<p>Không có dữ liệu.</p>');
 
   const headers = Object.keys(data[0]);
+
   table.innerHTML = `
     <thead>
-      <tr>${headers.map(h => `<th class='border px-2 py-1 bg-gray-200'>${h}</th>`).join('')}<th>Hành động</th></tr>
+      <tr>
+        ${headers.map(h => `<th class='border px-2 py-1 bg-gray-200'>${h}</th>`).join('')}
+        <th>Hành động</th>
+      </tr>
     </thead>
     <tbody>
       ${data.map((row, i) => `
         <tr>
           ${headers.map(h => {
-            const value = row[h];
-            const isDate = typeof value === 'string' && value.match(/\\d{4}-\\d{2}-\\d{2}T/);
-            const formatted = isDate ? new Date(value).toLocaleDateString('vi-VN') : value;
-            return `<td class='border px-2 py-1'>${formatted}</td>`;
+            let value = row[h];
+
+            // Nếu là kiểu ngày thật
+            if (Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value)) {
+              value = value.toLocaleDateString('vi-VN');
+            }
+
+            // Nếu là chuỗi kiểu ISO
+            else if (typeof value === 'string' && value.match(/^\\d{4}-\\d{2}-\\d{2}T/)) {
+              const date = new Date(value);
+              if (!isNaN(date)) {
+                value = date.toLocaleDateString('vi-VN');
+              }
+            }
+
+            return `<td class='border px-2 py-1'>${value}</td>`;
           }).join('')}
           <td class='border px-2 py-1'>
             <button onclick='editRow(${i})' class='text-blue-500 mr-2'>Sửa</button>
@@ -252,9 +269,11 @@ function renderTable(data) {
       `).join('')}
     </tbody>
   `;
+
   container.innerHTML = '';
   container.appendChild(table);
 }
+
 
           <td class='border px-2 py-1'>
             <button onclick='editRow(${i})' class='text-blue-500 mr-2'>Sửa</button>
