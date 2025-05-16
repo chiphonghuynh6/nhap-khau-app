@@ -143,7 +143,7 @@
 
 <div>
   <label class="block font-medium mb-1">AMOUNT</label>
-  <input type="number" name="AMOUNT" class="w-full border rounded px-2 py-1"/>
+  <input type="text" name="AMOUNT" class="w-full border rounded px-2 py-1"/>
 </div>
 
 <div>
@@ -257,15 +257,25 @@ function editRow(index) {
   const headers = Array.from(document.querySelectorAll("#dataTable table thead th")).map(th => th.innerText);
   const form = document.getElementById("importForm");
 
-  originalRowData = {}; // reset
-
   headers.forEach((header, i) => {
     if (header === "Hành động") return;
-    const input = form.querySelector(`[name="${header}"]`);
-    const value = cells[i].innerText.trim();
-    originalRowData[header] = value; // lưu dữ liệu gốc
 
-    if (input) input.value = value;
+    const input = form.querySelector(`[name="${header}"]`);
+    if (input) {
+      let value = cells[i].innerText;
+
+      // Kiểm tra nếu là input type="date" thì chuyển định dạng về yyyy-mm-dd
+      if (input.type === "date" && value) {
+        // Chuyển từ dd/mm/yyyy hoặc dd-mm-yyyy sang yyyy-mm-dd
+        const parts = value.split(/[\/\-]/); // tách theo / hoặc -
+        if (parts.length === 3) {
+          const [day, month, year] = parts;
+          value = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        }
+      }
+
+      input.value = value;
+    }
   });
 
   const resultDiv = document.getElementById('addResult');
@@ -273,7 +283,6 @@ function editRow(index) {
   resultDiv.classList.remove('hidden');
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
-
 
   function handleUpdate() {
   const form = document.getElementById("importForm");
