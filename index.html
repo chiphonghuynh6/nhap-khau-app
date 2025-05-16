@@ -220,13 +220,22 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbz-xW0HzV0TCkS3dh9kl6fcExPsOMLZAjJTAxkRwIdYhbVoF5WPAVGF9xUD2SaHf08HFA/exec';
 let editingIndex = -1;
 let fullData = [];
-
+let allData = [];
+  
 async function fetchData() {
   const res = await fetch(API_URL);
   fullData = await res.json();
   renderTable(fullData);
   document.getElementById('dataTable').classList.remove('hidden');
   document.getElementById('showTableBtn').classList.add('hidden');
+  try {
+    const response = await fetch(apiUrl);
+    const data = await response.json();
+    allData = data; // Gán vào biến toàn cục
+    renderData(allData); // Hiển thị dữ liệu ban đầu
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
 }
 
 function renderTable(data) {
