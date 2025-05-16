@@ -229,7 +229,7 @@ async function fetchData() {
   document.getElementById('dataTable').classList.remove('hidden');
   document.getElementById('showTableBtn').classList.add('hidden');
   try {
-    const response = await fetch(apiUrl);
+    const response = await fetch(API_URL);
     const data = await response.json();
     allData = data; // Gán vào biến toàn cục
     renderData(allData); // Hiển thị dữ liệu ban đầu
