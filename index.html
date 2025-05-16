@@ -29,9 +29,9 @@
 </div>
 
 <div>
-  <label class="block font-medium mb-1">DEC NO</label>
-  <input type="text" name="DEC NO" class="w-full border rounded px-2 py-1" readonly/>
-</div>
+        <label for="decNo" class="block font-medium mb-1">DEC NO (Tự động)</label>
+        <input type="text" id="decNo" name="DEC NO" class="w-full border rounded px-3 py-2 bg-gray-100" readonly />
+      </div>
 
 <div>
   <label class="block font-medium mb-1">FACT NO</label>
@@ -330,31 +330,32 @@ function editRow(index) {
   });
 }
 
-  document.getElementById('loaiHinh').addEventListener('change', async function () {
-  const loaiHinh = this.value;
+ document.getElementById('loaiHinh').addEventListener('change', async function () {
+      const loaiHinh = this.value;
 
-  if (!["A12", "E21", "H11"].includes(loaiHinh)) {
-    document.getElementById('decNo').value = '';
-    return;
-  }
+      if (!["A12", "E21", "H11"].includes(loaiHinh)) {
+        document.getElementById('decNo').value = '';
+        return;
+      }
 
-  try {
-    const response = await fetch(scriptURL + '?action=getMaxDecNo&loaiHinh=' + loaiHinh);
-    const data = await response.json();
+      try {
+        const response = await fetch(`${scriptURL}?action=getMaxDecNo&loaiHinh=${loaiHinh}`);
+        const data = await response.json();
 
-    const maxIndex = data.maxIndex || 0;
-    const newIndex = maxIndex + 1;
+        const maxIndex = data.maxIndex || 0;
+        const newIndex = maxIndex + 1;
 
-    let decNo = "CH" + newIndex;
-    if (loaiHinh === "A12") decNo += "-25";
-    if (loaiHinh === "E21") decNo += "KD-25";
-    if (loaiHinh === "H11") decNo += "-25PMD";
+        let decNo = "CH" + newIndex;
+        if (loaiHinh === "A12") decNo += "-25";
+        if (loaiHinh === "E21") decNo += "KD-25";
+        if (loaiHinh === "H11") decNo += "-25PMD";
 
-    document.getElementById('decNo').value = decNo;
-  } catch (error) {
-    console.error('Lỗi khi lấy DEC NO:', error);
-  }
-});
+        document.getElementById('decNo').value = decNo;
+      } catch (error) {
+        console.error('Lỗi khi lấy DEC NO:', error);
+      }
+    });
+
 
 async function deleteRow(index) {
   if (!confirm('Bạn có chắc chắn muốn xoá dòng này?')) return;
