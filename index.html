@@ -30,7 +30,7 @@
 
 <div>
   <label class="block font-medium mb-1">DEC NO</label>
-  <input type="text" name="DEC NO" class="w-full border rounded px-2 py-1"/>
+  <input type="text" name="DEC NO" class="w-full border rounded px-2 py-1" readonly/>
 </div>
 
 <div>
@@ -207,7 +207,7 @@
   </div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbz-xW0HzV0TCkS3dh9kl6fcExPsOMLZAjJTAxkRwIdYhbVoF5WPAVGF9xUD2SaHf08HFA/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwh-4bfNAmD-mWZlni567nUjDn6MHqE14YN2ahxN855Q8dgpicwaWj_SpFcTTlTc3kISQ/exec';
 let editingIndex = -1;
 let fullData = [];
 
@@ -330,6 +330,31 @@ function editRow(index) {
   });
 }
 
+  document.getElementById('loaiHinh').addEventListener('change', async function () {
+  const loaiHinh = this.value;
+
+  if (!["A12", "E21", "H11"].includes(loaiHinh)) {
+    document.getElementById('decNo').value = '';
+    return;
+  }
+
+  try {
+    const response = await fetch(scriptURL + '?action=getMaxDecNo&loaiHinh=' + loaiHinh);
+    const data = await response.json();
+
+    const maxIndex = data.maxIndex || 0;
+    const newIndex = maxIndex + 1;
+
+    let decNo = "CH" + newIndex;
+    if (loaiHinh === "A12") decNo += "-25";
+    if (loaiHinh === "E21") decNo += "KD-25";
+    if (loaiHinh === "H11") decNo += "-25PMD";
+
+    document.getElementById('decNo').value = decNo;
+  } catch (error) {
+    console.error('Lỗi khi lấy DEC NO:', error);
+  }
+});
 
 async function deleteRow(index) {
   if (!confirm('Bạn có chắc chắn muốn xoá dòng này?')) return;
