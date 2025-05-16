@@ -46,7 +46,7 @@
 
 <div>
   <label class="block font-medium mb-1">LOẠI HÌNH</label>
-  <select name="LOẠI HÌNH" class="w-full border rounded px-2 py-1">
+  <select id="loaiHinh" name="LOẠI HÌNH" class="w-full border rounded px-2 py-1">
     <option></option>
     <option>A12</option>
     <option>E21</option>
@@ -330,7 +330,7 @@ function editRow(index) {
   });
 }
 
- document.getElementById('LOẠI HÌNH').addEventListener('change', async function () {
+ document.getElementById('loaiHinh').addEventListener('change', async function () {
       const loaiHinh = this.value;
 
       if (!["A12", "E21", "H11"].includes(loaiHinh)) {
