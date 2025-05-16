@@ -12,22 +12,169 @@
 
     <!-- Form nhập liệu -->
     <form id="importForm" class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-white p-4 rounded shadow">
-      <!-- Ví dụ 1 vài trường, bạn thêm đầy đủ theo form của bạn -->
-      <fieldset class="border p-4 space-y-2">
-        <legend class="font-semibold">Thông tin</legend>
+  <!-- Thông tin chung -->
+  <fieldset class="border p-4 space-y-2">
+    <legend class="font-semibold">Thông tin chung</legend>
 
-        <div><label class="block">DEC NO</label><input type="text" name="DEC NO" class="w-full p-2 border rounded" /></div>
-        <div><label class="block">FACT NO</label><input type="text" name="FACT NO" class="w-full p-2 border rounded" /></div>
-        <div><label class="block">ATC</label><input type="date" name="ATC" class="w-full p-2 border rounded" /></div>
-        <div><label class="block">AMOUNT</label><input type="number" name="AMOUNT" class="w-full p-2 border rounded" /></div>
-      </fieldset>
+    <div>
+      <label class="block font-medium">GET DOCS</label>
+      <input type="date" name="GET DOCS" class="w-full p-2 border border-black rounded"/>
+    </div>
 
-      <div class="md:col-span-3">
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded w-full md:w-auto">
-          Thêm lô mới
-        </button>
-      </div>
-    </form>
+    <div>
+      <label class="block font-medium">DEC NO</label>
+      <input type="text" name="DEC NO" class="w-full p-2 border border-black rounded"/>
+    </div>
+
+    <div>
+      <label class="block font-medium">FACT NO</label>
+      <select name="FACT NO" class="w-full p-2 border border-black rounded">
+        <option></option>
+        <option>18A</option>
+        <option>B0SZ</option>
+        <option>B0M1</option>
+        <option>B0M2</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="block font-medium">LOẠI HÌNH</label>
+      <select name="LOẠI HÌNH" class="w-full p-2 border border-black rounded">
+        <option></option>
+        <option>A12</option>
+        <option>E21</option>
+        <option>H11</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="block font-medium">FWD</label>
+      <input type="text" name="FWD" class="w-full p-2 border border-black rounded"/>
+    </div>
+
+    <div>
+      <label class="block font-medium">SUPPLIER</label>
+      <input type="text" name="SUPPLIER" class="w-full p-2 border border-black rounded"/>
+    </div>
+
+    <div>
+      <label class="block font-medium">TYPE</label>
+      <select name="TYPE" class="w-full p-2 border border-black rounded">
+        <option></option>
+        <option>CONT</option>
+        <option>CFS</option>
+        <option>NGOAI QUAN</option>
+        <option>BY TRUCK</option>
+        <option>DHL</option>
+        <option>AIR</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="block font-medium">ORIGIN</label>
+      <input type="text" name="ORIGIN" class="w-full p-2 border border-black rounded"/>
+    </div>
+  </fieldset>
+
+  <!-- Thông tin vận đơn -->
+  <fieldset class="border p-4 space-y-2">
+    <legend class="font-semibold">Thông tin vận đơn</legend>
+
+    <div>
+      <label class="block font-medium">BILL NO</label>
+      <input type="text" name="BILL NO" class="w-full p-2 border border-black rounded"/>
+    </div>
+
+    <div>
+      <label class="block font-medium">BILL DATE</label>
+      <input type="date" name="BILL DATE" class="w-full p-2 border border-black rounded"/>
+    </div>
+
+    <div>
+      <label class="block font-medium">PACKAGES</label>
+      <input type="number" name="PACKAGES" class="w-full p-2 border border-black rounded"/>
+    </div>
+
+    <div>
+      <label class="block font-medium">GW</label>
+      <input type="number" name="GW" class="w-full p-2 border border-black rounded"/>
+    </div>
+
+    <div>
+      <label class="block font-medium">CBM</label>
+      <input type="number" name="CBM" class="w-full p-2 border border-black rounded"/>
+    </div>
+
+    <div>
+      <label class="block font-medium">CTN NO</label>
+      <input type="text" name="CTN NO" class="w-full p-2 border border-black rounded"/>
+    </div>
+
+    <div>
+      <label class="block font-medium">ETA DATE</label>
+      <input type="date" name="ETA DATE" class="w-full p-2 border border-black rounded"/>
+    </div>
+
+    <div>
+      <label class="block font-medium">ATC</label>
+      <input type="date" name="ATC" class="w-full p-2 border border-black rounded"/>
+    </div>
+  </fieldset>
+
+  <!-- Thông tin hóa đơn -->
+  <fieldset class="border p-4 space-y-2">
+    <legend class="font-semibold">Thông tin hóa đơn</legend>
+
+    <div>
+      <label class="block font-medium">INV NO</label>
+      <input type="text" name="INV NO" class="w-full p-2 border border-black rounded"/>
+    </div>
+
+    <div>
+      <label class="block font-medium">INV DATE</label>
+      <input type="date" name="INV DATE" class="w-full p-2 border border-black rounded"/>
+    </div>
+
+    <div>
+      <label class="block font-medium">AMOUNT</label>
+      <input type="number" name="AMOUNT" class="w-full p-2 border border-black rounded"/>
+    </div>
+
+    <div>
+      <label class="block font-medium">TERM</label>
+      <select name="TERM" class="w-full p-2 border border-black rounded">
+        <option></option>
+        <option>CIF</option>
+        <option>FOB</option>
+        <option>C&F</option>
+        <option>FCA</option>
+        <option>EXW</option>
+        <option>CPT</option>
+        <option>DAT</option>
+        <option>DAP</option>
+        <option>CIP</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="block font-medium">File PDF</label>
+      <input type="file" id="pdfFile" class="w-full p-2 border border-black rounded"/>
+    </div>
+  </fieldset>
+
+  <!-- Nút Thêm -->
+  <div class="md:col-span-3">
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded w-full md:w-auto">
+      Thêm lô mới
+    </button>
+    <div class="mt-2">
+  <button onclick="exportCsv()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+    📤 Xuất dữ liệu ra CSV
+  </button>
+</div>
+  </div>
+</form>
+
 
     <!-- Thông báo kết quả -->
     <div id="addResult" class="mt-4 hidden bg-green-50 border border-green-400 p-4 rounded text-green-700"></div>
