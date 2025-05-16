@@ -324,15 +324,27 @@ function editRow(index) {
 
 async function deleteRow(index) {
   if (!confirm('Bạn có chắc chắn muốn xoá dòng này?')) return;
-  await fetch(API_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'delete', index })
-  });
-  const resultDiv = document.getElementById('addResult');
-  resultDiv.innerHTML = `<p class="font-bold text-red-700">🗑 Đã xoá dòng ${index} thành công.</p>`;
-  resultDiv.classList.remove('hidden');
-  fetchData();
+
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'delete',
+        rowIndex: index
+      })
+    });
+    const result = await res.json();
+
+    document.getElementById('addResult').classList.remove('hidden');
+    document.getElementById('addResult').innerText = result.message || '🗑 Xoá thành công';
+    fetchData(); // Refresh table
+  } catch (error) {
+    alert('Có lỗi khi xoá dữ liệu!');
+    console.error(error);
+  }
 }
+
 
 function showTable() {
   fetchData();
