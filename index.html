@@ -218,10 +218,10 @@ function renderTable(data) {
   const tbodyRows = data.map((row, i) => {
     const cells = headers.map(h => {
       let value = row[h];
-      if (typeof value === 'string' && value.includes('T') && value.includes('Z')) {
-        const parsedDate = new Date(value);
-        if (!isNaN(parsedDate)) {
-          value = parsedDate.toLocaleDateString('vi-VN');
+      if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
+        const d = new Date(value);
+        if (!isNaN(d)) {
+          value = d.toLocaleDateString('vi-VN');
         }
       }
       return `<td class='border px-2 py-1'>${value}</td>`;
@@ -253,6 +253,7 @@ function renderTable(data) {
   container.innerHTML = '';
   container.appendChild(table);
 }
+
 
 function editRow(index) {
   editingIndex = index;
