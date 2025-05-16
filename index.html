@@ -201,6 +201,16 @@
       <label for="searchDecNo" class="font-medium">Tìm theo DEC NO:</label>
       <input id="searchDecNo" type="text" placeholder="Nhập DEC NO..." class="p-2 border border-gray-400 rounded w-full md:w-1/3" oninput="filterTableByDecNo()">
     </div>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+  <input type="text" id="searchSupplier" placeholder="Nhà cung cấp (SUPPLIER)" class="input input-bordered w-full" />
+  <input type="text" id="searchFWD" placeholder="FWD" class="input input-bordered w-full" />
+  <input type="date" id="searchETADateFrom" class="input input-bordered w-full" />
+  <input type="date" id="searchETADateTo" class="input input-bordered w-full" />
+</div>
+<button onclick="applyAdvancedFilter()" class="btn btn-primary mb-4">Lọc dữ liệu</button>
+    <button onclick="resetFilter()" class="btn btn-secondary mb-4 ml-2">Xóa lọc</button>
+
+
     
     <!-- Bảng dữ liệu -->
     <div id="dataTable" class="overflow-x-auto mt-6 bg-white rounded shadow p-4"></div>
@@ -425,6 +435,35 @@ function exportAtcEmptyCsv() {
   link.download = 'lohang_chua_atc.csv';
   link.click();
 }
+  function applyAdvancedFilter() {
+  const supplier = document.getElementById("searchSupplier").value.toLowerCase();
+  const fwd = document.getElementById("searchFWD").value.toLowerCase();
+  const etaFrom = document.getElementById("searchETADateFrom").value;
+  const etaTo = document.getElementById("searchETADateTo").value;
+
+  const filteredData = allData.filter(row => {
+    const rowSupplier = row["SUPPLIER"]?.toLowerCase() || "";
+    const rowFWD = row["FWD"]?.toLowerCase() || "";
+    const rowETA = row["ETA DATE"] || "";
+
+    const matchSupplier = supplier === "" || rowSupplier.includes(supplier);
+    const matchFWD = fwd === "" || rowFWD.includes(fwd);
+    const matchETA = (!etaFrom || rowETA >= etaFrom) && (!etaTo || rowETA <= etaTo);
+
+    return matchSupplier && matchFWD && matchETA;
+  });
+
+  renderData(filteredData);
+}
+function resetFilter() {
+  document.getElementById("searchSupplier").value = "";
+  document.getElementById("searchFWD").value = "";
+  document.getElementById("searchETADateFrom").value = "";
+  document.getElementById("searchETADateTo").value = "";
+
+  renderData(allData);
+}
+
 </script>
 </body>
 </html>
