@@ -317,10 +317,11 @@ form.onsubmit = async e => {
 function filterTableByDecNo() {
   const searchValue = document.getElementById("searchDecNo").value.toLowerCase();
   const filteredData = tableData.filter(row =>
-    (row["DEC NO"] + "").toLowerCase().includes(searchValue)
+    ((row["DEC NO"] || "") + "").toLowerCase().includes(searchValue)
   );
   renderTable(filteredData);
 }
+
 
 
 async function exportCsv() {
