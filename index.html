@@ -183,11 +183,11 @@
       <button onclick="exportCsv()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">📤 Xuất toàn bộ CSV</button>
       <button onclick="exportAtcEmptyCsv()" class="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700">📤 Xuất ATC trống CSV</button>
     </div>
-<div class="mt-4 flex items-center gap-2">
-  <label for="searchDecNo" class="font-medium">Tìm theo DEC NO:</label>
-  <input id="searchDecNo" type="text" placeholder="Nhập DEC NO..."
-         class="p-2 border border-gray-400 rounded w-full md:w-1/3" oninput="filterTableByDecNo()">
-</div>
+ <div class="mt-4 flex items-center gap-2">
+      <label for="searchDecNo" class="font-medium">Tìm theo DEC NO:</label>
+      <input id="searchDecNo" type="text" placeholder="Nhập DEC NO..."
+             class="p-2 border border-gray-400 rounded w-full md:w-1/3" oninput="filterTableByDecNo()" />
+    </div>
     <!-- Bảng dữ liệu -->
     <div id="dataTable" class="overflow-x-auto mt-6 bg-white rounded shadow p-4"></div>
   </div>
@@ -196,7 +196,10 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbz-xW0HzV0TCkS3dh9kl6fcExPsOMLZAjJTAxkRwIdYhbVoF5WPAVGF9xUD2SaHf08HFA/exec'; // ⚠️ Thay bằng URL script của bạn
  let editingIndex = -1;
 let fullData = [];
-
+  
+window.addEventListener('DOMContentLoaded', function () {
+  fetchData();
+});
 async function fetchData() {
   const res = await fetch(API_URL);
   fullData = await res.json();
@@ -322,15 +325,6 @@ form.onsubmit = async e => {
   fetchData();
 };
 
-function filterTableByDecNo() {
-  const q = document.getElementById("searchDecNo").value.toLowerCase();
-  const filtered = fullData.filter(row =>
-    (row["DEC NO"] || '').toLowerCase().includes(q)
-  );
-  renderTable(filtered);
-}
-
-
 async function exportCsv() {
   const res = await fetch(API_URL, {
     method: 'POST',
@@ -349,6 +343,15 @@ async function exportAtcEmptyCsv() {
   const url = await res.text();
   if (url.startsWith("http")) window.open(url, '_blank');
   else alert("Xuất thất bại: " + url);
+}
+  function filterTableByDecNo() {
+  const input = document.getElementById("searchDecNo");
+  if (!input) return;
+  const q = input.value.toLowerCase();
+  const filtered = fullData.filter(row =>
+    (row["DEC NO"] || '').toLowerCase().includes(q)
+  );
+  renderTable(filtered);
 }
 
 fetchData();
