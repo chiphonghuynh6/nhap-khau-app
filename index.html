@@ -314,13 +314,6 @@ form.onsubmit = async e => {
   fetchData();
 };
 
-function filterTableByDecNo() {
-  const searchValue = document.getElementById("searchDecNo").value.toLowerCase();
-  const filteredData = fullData.filter(row => 
-    String(row["DEC NO"] || "").toLowerCase().includes(searchValue)
-  );
-  renderTable(filteredData);
-}
 
 
 async function exportCsv() {
