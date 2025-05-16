@@ -218,12 +218,6 @@ function filterTableByDecNo() {
 }
 
 
-async function fetchData() {
-  const res = await fetch(API_URL);
-  const data = await res.json();
-  renderTable(data);
-}
-
 function renderTable(data) {
   const container = document.getElementById('dataTable');
   const table = document.createElement('table');
