@@ -229,7 +229,10 @@ function renderTable(data) {
   const table = document.createElement('table');
   table.className = 'min-w-full border border-gray-300';
 
-  if (data.length === 0) return (container.innerHTML = '<p>Không có dữ liệu.</p>');
+  if (data.length === 0) {
+    container.innerHTML = '<p>Không có dữ liệu.</p>';
+    return;
+  }
 
   const headers = Object.keys(data[0]);
 
@@ -241,38 +244,41 @@ function renderTable(data) {
       </tr>
     </thead>
     <tbody>
-      ${data.map((row, i) => `
-        <tr>
-          ${headers.map(h => {
-            let value = row[h];
+      ${data.map((row, i) => {
+        return `
+          <tr>
+            ${headers.map(h => {
+              let value = row[h];
 
-            // Nếu là kiểu ngày thật
-            if (Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value)) {
-              value = value.toLocaleDateString('vi-VN');
-            }
-
-            // Nếu là chuỗi kiểu ISO
-            else if (typeof value === 'string' && value.match(/^\\d{4}-\\d{2}-\\d{2}T/)) {
-              const date = new Date(value);
-              if (!isNaN(date)) {
-                value = date.toLocaleDateString('vi-VN');
+              // Nếu là ngày Date object
+              if (Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value)) {
+                value = value.toLocaleDateString('vi-VN');
               }
-            }
 
-            return `<td class='border px-2 py-1'>${value}</td>`;
-          }).join('')}
-          <td class='border px-2 py-1'>
-            <button onclick='editRow(${i})' class='text-blue-500 mr-2'>Sửa</button>
-            <button onclick='deleteRow(${i + 1})' class='text-red-500'>Xoá</button>
-          </td>
-        </tr>
-      `).join('')}
+              // Nếu là chuỗi ISO
+              else if (typeof value === 'string' && value.match(/^\\d{4}-\\d{2}-\\d{2}T/)) {
+                const date = new Date(value);
+                if (!isNaN(date)) {
+                  value = date.toLocaleDateString('vi-VN');
+                }
+              }
+
+              return `<td class='border px-2 py-1'>${value}</td>`;
+            }).join('')}
+            <td class='border px-2 py-1'>
+              <button onclick='editRow(${i})' class='text-blue-500 mr-2'>Sửa</button>
+              <button onclick='deleteRow(${i + 1})' class='text-red-500'>Xoá</button>
+            </td>
+          </tr>
+        `;
+      }).join('')}
     </tbody>
   `;
 
   container.innerHTML = '';
   container.appendChild(table);
 }
+
 
 
           <td class='border px-2 py-1'>
