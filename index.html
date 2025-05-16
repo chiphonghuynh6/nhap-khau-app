@@ -309,6 +309,10 @@ function editRow(index) {
     // Nếu input trống, dùng lại dữ liệu gốc
     updatedData[key] = value || originalRowData[key] || "";
   });
+    if (currentEditingRow) {
+    currentEditingRow.classList.remove("editing-row");
+    currentEditingRow = null;
+  }
 
   // Gửi dữ liệu này lên API, ví dụ:
   fetch(API_URL, {
