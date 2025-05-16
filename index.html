@@ -247,22 +247,62 @@ function renderTable(data) {
   container.appendChild(table);
 }
 
+let editingIndex = null;
+let originalRowData = {};
+
 function editRow(index) {
   editingIndex = index;
   const row = document.querySelectorAll("#dataTable table tbody tr")[index];
   const cells = row.querySelectorAll("td");
   const headers = Array.from(document.querySelectorAll("#dataTable table thead th")).map(th => th.innerText);
   const form = document.getElementById("importForm");
+
+  originalRowData = {}; // reset
+
   headers.forEach((header, i) => {
     if (header === "Hành động") return;
     const input = form.querySelector(`[name="${header}"]`);
-    if (input) input.value = cells[i].innerText;
+    const value = cells[i].innerText.trim();
+    originalRowData[header] = value; // lưu dữ liệu gốc
+
+    if (input) input.value = value;
   });
+
   const resultDiv = document.getElementById('addResult');
   resultDiv.innerHTML = `<p class="font-bold text-yellow-700">🛠 Đang chỉnh sửa dòng ${index + 2}...</p>`;
   resultDiv.classList.remove('hidden');
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
+
+
+  function handleUpdate() {
+  const form = document.getElementById("importForm");
+  const inputs = form.querySelectorAll("input, select, textarea"); // tất cả trường dữ liệu
+
+  const updatedData = {};
+  inputs.forEach(input => {
+    const key = input.name;
+    const value = input.value.trim();
+    // Nếu input trống, dùng lại dữ liệu gốc
+    updatedData[key] = value || originalRowData[key] || "";
+  });
+
+  // Gửi dữ liệu này lên API, ví dụ:
+  fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "update",
+      rowIndex: editingIndex + 2,
+      data: updatedData
+    }),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  }).then(response => {
+    // Xử lý sau cập nhật...
+  });
+}
+
 
 async function deleteRow(index) {
   if (!confirm('Bạn có chắc chắn muốn xoá dòng này?')) return;
