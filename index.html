@@ -315,14 +315,13 @@ form.onsubmit = async e => {
 };
 
 function filterTableByDecNo() {
-  const input = document.getElementById("searchDecNo");
-  if (!input) return;
-  const query = input.value.toLowerCase();
-  const filtered = fullData.filter(row =>
-    (row["DEC NO"] || '').toLowerCase().includes(query)
+  const searchValue = document.getElementById("searchDecNo").value.toLowerCase();
+  const filteredData = tableData.filter(row =>
+    (row["DEC NO"] + "").toLowerCase().includes(searchValue)
   );
-  renderTable(filtered);
+  renderTable(filteredData);
 }
+
 
 async function exportCsv() {
   const res = await fetch(API_URL, {
