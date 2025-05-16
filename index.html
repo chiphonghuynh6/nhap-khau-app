@@ -464,14 +464,47 @@ function exportAtcEmptyCsv() {
 
   renderData(filteredData);
 }
-function resetFilter() {
-  document.getElementById("searchSupplier").value = "";
-  document.getElementById("searchFWD").value = "";
-  document.getElementById("searchETADateFrom").value = "";
-  document.getElementById("searchETADateTo").value = "";
+  function renderData(data) {
+  const tableBody = document.getElementById("data-table-body");
+  tableBody.innerHTML = "";
 
-  renderData(allData);
+  data.forEach((item, index) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${item["GET DOCS"] || ""}</td>
+      <td>${item["FACT NO"] || ""}</td>
+      <td>${item["DEC NO"] || ""}</td>
+      <td>${item["LOẠI HÌNH"] || ""}</td>
+      <td>${item["TYPE"] || ""}</td>
+      <td>${item["FWD"] || ""}</td>
+      <td>${item["BILL NO"] || ""}</td>
+      <td>${item["BILL DATE"] || ""}</td>
+      <td>${item["PACKAGES"] || ""}</td>
+      <td>${item["GW"] || ""}</td>
+      <td>${item["CBM"] || ""}</td>
+      <td>${item["CTN NO"] || ""}</td>
+      <td>${item["PK/GW/CBM"] || ""}</td>
+      <td>${item["ORIGIN"] || ""}</td>
+      <td>${item["SUPPLIER"] || ""}</td>
+      <td>${item["INV NO"] || ""}</td>
+      <td>${item["INV DATE"] || ""}</td>
+      <td>${item["AMOUNT"] || ""}</td>
+      <td>${item["TERM"] || ""}</td>
+      <td>${item["ETA DATE"] || ""}</td>
+      <td>${item["ATC"] || ""}</td>
+      <td>${item["Remarks"] || ""}</td>
+      <td>${item["BL FACT"] || ""}</td>
+    `;
+    tableBody.appendChild(row);
+  });
 }
+
+function resetFilter() {
+  renderData(allData); // Hiển thị lại toàn bộ dữ liệu gốc
+  document.getElementById("searchInput").value = ""; // Nếu có input tìm kiếm
+}
+
 
 </script>
 </body>
