@@ -183,9 +183,11 @@
       <button onclick="exportCsv()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">📤 Xuất toàn bộ CSV</button>
       <button onclick="exportAtcEmptyCsv()" class="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700">📤 Xuất ATC trống CSV</button>
     </div>
- <div class="mt-4 flex items-center gap-2">
-      <input id="searchDecNo" type="text" placeholder="Nhập DEC NO..."
-       class="p-2 border border-gray-400 rounded w-full md:w-1/3" />
+
+    <div class="mt-4 flex items-center gap-2">
+      <label for="searchDecNo" class="font-medium">Tìm theo DEC NO:</label>
+      <input id="searchDecNo" type="text" placeholder="Nhập DEC NO..." class="p-2 border border-gray-400 rounded w-full md:w-1/3" />
+    </div>
 
     </div>
     <!-- Bảng dữ liệu -->
@@ -197,9 +199,6 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbz-xW0HzV0TCkS3dh9kl6fc
  let editingIndex = -1;
 let fullData = [];
   
-window.addEventListener('DOMContentLoaded', function () {
-  fetchData();
-});
 async function fetchData() {
   const res = await fetch(API_URL);
   fullData = await res.json();
@@ -359,6 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
     input.addEventListener('input', filterTableByDecNo);
   }
 });
+  
 fetchData();
 </script>
 </body>
