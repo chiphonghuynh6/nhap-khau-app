@@ -264,14 +264,24 @@ function editRow(index) {
       let value = cells[i].innerText;
 
       // Kiểm tra nếu là input type="date" thì chuyển định dạng về yyyy-mm-dd
-      if (input.type === "date" && value) {
-        // Chuyển từ dd/mm/yyyy hoặc dd-mm-yyyy sang yyyy-mm-dd
-        const parts = value.split(/[\/\-]/); // tách theo / hoặc -
-        if (parts.length === 3) {
-          const [day, month, year] = parts;
-          value = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-        }
-      }
+     if (input.type === "date" && value) {
+  const parts = value.split(/[\/\-]/);
+  if (parts.length === 3) {
+    let day, month, year;
+
+    if (value.includes('/')) {
+      [day, month, year] = parts;
+    } else {
+      // Trường hợp ngày đã là yyyy-mm-dd hoặc yyyy/mm/dd
+      [year, month, day] = parts;
+    }
+
+    // Kiểm tra hợp lệ
+    if (year.length === 4 && month.length <= 2 && day.length <= 2) {
+      value = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    }
+  }
+}
 
       input.value = value;
     }
