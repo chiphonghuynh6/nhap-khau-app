@@ -7,34 +7,30 @@
   <title>Quản lý nhập khẩu</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-4">
-  <div class="max-w-screen-xl mx-auto">
-    <h1 class="text-2xl font-bold mb-4">Quản lý nhập khẩu</h1>
-
-```
+<body class="bg-gray-50 p-4">
+  <div class="max-w-6xl mx-auto bg-white p-4 rounded-lg shadow">
+    <h1 class="text-xl font-semibold mb-4">Form Nhập Liệu</h1>
 <!-- Form nhập liệu -->
-<form id="importForm" class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-white p-4 rounded shadow">
-```
+<form id="importForm" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
 
   <!-- Thông tin chung -->
 
   <fieldset class="border p-4 space-y-2">
     <legend class="font-semibold">Thông tin chung</legend>
 
-```
 <div>
-  <label class="block font-medium">GET DOCS</label>
-  <input type="date" name="GET DOCS" class="w-full p-2 border border-black rounded"/>
+  <label class="block font-medium mb-1">GET DOCS</label>
+  <input type="date" name="GET DOCS" class="w-full border rounded px-2 py-1"/>
 </div>
 
 <div>
-  <label class="block font-medium">DEC NO</label>
-  <input type="text" name="DEC NO" class="w-full p-2 border border-black rounded"/>
+  <label class="block font-medium mb-1">DEC NO</label>
+  <input type="text" name="DEC NO" class="w-full border rounded px-2 py-1"/>
 </div>
 
 <div>
-  <label class="block font-medium">FACT NO</label>
-  <select name="FACT NO" class="w-full p-2 border border-black rounded">
+  <label class="block font-medium mb-1">FACT NO</label>
+  <select name="FACT NO" class="w-full border rounded px-2 py-1">
     <option></option>
     <option>18A</option>
     <option>B0SZ</option>
@@ -44,8 +40,8 @@
 </div>
 
 <div>
-  <label class="block font-medium">LOẠI HÌNH</label>
-  <select name="LOẠI HÌNH" class="w-full p-2 border border-black rounded">
+  <label class="block font-medium mb-1">LOẠI HÌNH</label>
+  <select name="LOẠI HÌNH" class="w-full border rounded px-2 py-1">
     <option></option>
     <option>A12</option>
     <option>E21</option>
@@ -54,18 +50,18 @@
 </div>
 
 <div>
-  <label class="block font-medium">FWD</label>
-  <input type="text" name="FWD" class="w-full p-2 border border-black rounded"/>
+  <label class="block font-medium mb-1">FWD</label>
+  <input type="text" name="FWD" class="w-full border rounded px-2 py-1"/>
 </div>
 
 <div>
-  <label class="block font-medium">SUPPLIER</label>
-  <input type="text" name="SUPPLIER" class="w-full p-2 border border-black rounded"/>
+  <label class="block font-medium mb-1">SUPPLIER</label>
+  <input type="text" name="SUPPLIER" class="w-full border rounded px-2 py-1"/>
 </div>
 
 <div>
-  <label class="block font-medium">TYPE</label>
-  <select name="TYPE" class="w-full p-2 border border-black rounded">
+  <label class="block font-medium mb-1">TYPE</label>
+  <select name="TYPE" class="w-full border rounded px-2 py-1">
     <option></option>
     <option>CONT</option>
     <option>CFS</option>
@@ -77,8 +73,8 @@
 </div>
 
 <div>
-  <label class="block font-medium">ORIGIN</label>
-  <input type="text" name="ORIGIN" class="w-full p-2 border border-black rounded"/>
+  <label class="block font-medium mb-1">ORIGIN</label>
+  <input type="text" name="ORIGIN" class="w-full border rounded px-2 py-1"/>
 </div>
 ```
 
@@ -91,43 +87,43 @@
 
 ```
 <div>
-  <label class="block font-medium">BILL NO</label>
-  <input type="text" name="BILL NO" class="w-full p-2 border border-black rounded"/>
+  <label class="block font-medium mb-1">BILL NO</label>
+  <input type="text" name="BILL NO" class="w-full border rounded px-2 py-1"/>
 </div>
 
 <div>
-  <label class="block font-medium">BILL DATE</label>
-  <input type="date" name="BILL DATE" class="w-full p-2 border border-black rounded"/>
+  <label class="block font-medium mb-1">BILL DATE</label>
+  <input type="date" name="BILL DATE" class="w-full border rounded px-2 py-1"/>
 </div>
 
 <div>
-  <label class="block font-medium">PACKAGES</label>
-  <input type="number" name="PACKAGES" class="w-full p-2 border border-black rounded"/>
+  <label class="block font-medium mb-1">PACKAGES</label>
+  <input type="number" name="PACKAGES" class="w-full border rounded px-2 py-1"/>
 </div>
 
 <div>
-  <label class="block font-medium">GW</label>
-  <input type="number" name="GW" class="w-full p-2 border border-black rounded"/>
+  <label class="block font-medium mb-1">GW</label>
+  <input type="number" name="GW" class="w-full border rounded px-2 py-1"/>
 </div>
 
 <div>
-  <label class="block font-medium">CBM</label>
-  <input type="number" name="CBM" class="w-full p-2 border border-black rounded"/>
+  <label class="block font-medium mb-1">CBM</label>
+  <input type="number" name="CBM" class="w-full border rounded px-2 py-1"/>
 </div>
 
 <div>
-  <label class="block font-medium">CTN NO</label>
-  <input type="text" name="CTN NO" class="w-full p-2 border border-black rounded"/>
+  <label class="block font-medium mb-1">CTN NO</label>
+  <input type="text" name="CTN NO" class="w-full border rounded px-2 py-1"/>
 </div>
 
 <div>
-  <label class="block font-medium">ETA DATE</label>
-  <input type="date" name="ETA DATE" class="w-full p-2 border border-black rounded"/>
+  <label class="block font-medium mb-1">ETA DATE</label>
+  <input type="date" name="ETA DATE" class="w-full border rounded px-2 py-1"/>
 </div>
 
 <div>
-  <label class="block font-medium">ATC</label>
-  <input type="date" name="ATC" class="w-full p-2 border border-black rounded"/>
+  <label class="block font-medium mb-1">ATC</label>
+  <input type="date" name="ATC" class="w-full border rounded px-2 py-1"/>
 </div>
 ```
 
@@ -140,23 +136,23 @@
 
 ```
 <div>
-  <label class="block font-medium">INV NO</label>
-  <input type="text" name="INV NO" class="w-full p-2 border border-black rounded"/>
+  <label class="block font-medium mb-1">INV NO</label>
+  <input type="text" name="INV NO" class="w-full border rounded px-2 py-1"/>
 </div>
 
 <div>
-  <label class="block font-medium">INV DATE</label>
-  <input type="date" name="INV DATE" class="w-full p-2 border border-black rounded"/>
+  <label class="block font-medium mb-1">INV DATE</label>
+  <input type="date" name="INV DATE" class="w-full border rounded px-2 py-1"/>
 </div>
 
 <div>
-  <label class="block font-medium">AMOUNT</label>
-  <input type="number" name="AMOUNT" class="w-full p-2 border border-black rounded"/>
+  <label class="block font-medium mb-1">AMOUNT</label>
+  <input type="number" name="AMOUNT" class="w-full border rounded px-2 py-1"/>
 </div>
 
 <div>
-  <label class="block font-medium">TERM</label>
-  <select name="TERM" class="w-full p-2 border border-black rounded">
+  <label class="block font-medium mb-1">TERM</label>
+  <select name="TERM" class="w-full border rounded px-2 py-1">
     <option></option>
     <option>CIF</option>
     <option>FOB</option>
@@ -172,7 +168,7 @@
 
 <div>
   <label class="block font-medium">File PDF</label>
-  <input type="file" id="pdfFile" class="w-full p-2 border border-black rounded"/>
+  <input type="file" id="pdfFile" class="w-full border rounded px-2 py-1"/>
 </div>
 ```
 
