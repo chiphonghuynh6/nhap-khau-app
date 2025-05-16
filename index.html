@@ -175,7 +175,11 @@
   </fieldset>
 
   <!-- Nút Thêm -->
-
+<div class="mb-4">
+  <button id="addNewBtn" type="button" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+    ➕ Thêm mới
+  </button>
+</div>
   <div class="md:col-span-3">
     <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded w-full md:w-auto">
       Lưu
@@ -253,6 +257,61 @@ function renderTable(data) {
 }
 
 let originalRowData = {};
+
+  
+  // Vô hiệu hóa toàn bộ form lúc đầu
+function setFormDisabled(disabled) {
+  const form = document.getElementById('importForm');
+  const elements = form.querySelectorAll('input, select, textarea, button[type="submit"]');
+  elements.forEach(el => {
+    if (el.type !== 'button') el.disabled = disabled;
+  });
+}
+
+// Sự kiện nhấn nút Thêm mới
+document.getElementById('addNewBtn').addEventListener('click', () => {
+  editingIndex = -1; // reset chỉnh sửa
+  document.getElementById('importForm').reset();
+  setFormDisabled(false);
+  document.getElementById('addResult').classList.add('hidden');
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+// Sau khi thêm hoặc cập nhật xong => disable lại form
+form.onsubmit = async e => {
+  e.preventDefault();
+  const formData = new FormData(form);
+  const obj = {};
+  formData.forEach((v, k) => { if (k !== 'pdfFile') obj[k] = v });
+
+  const resultDiv = document.getElementById('addResult');
+  if (editingIndex > -1) {
+    await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'update', index: editingIndex + 2, data: obj })
+    });
+    resultDiv.innerHTML = `<p class="font-bold text-blue-700">✅ Cập nhật thành công dòng ${editingIndex + 2}!</p>`;
+    editingIndex = -1;
+  } else {
+    await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'add', data: obj })
+    });
+    resultDiv.innerHTML = `<p class="font-bold text-green-700">✅ Thêm dòng mới thành công!</p>`;
+  }
+
+  resultDiv.classList.remove('hidden');
+  form.reset();
+  setFormDisabled(true); // Khoá lại form sau khi lưu
+  fetchData();
+};
+
+// Tự disable form khi tải trang
+window.onload = () => {
+  fetchData();
+  setFormDisabled(true);
+};
+
 
 function editRow(index) {
   editingIndex = index;
