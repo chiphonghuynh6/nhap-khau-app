@@ -280,19 +280,6 @@ function renderTable(data) {
 }
 
 
-
-          <td class='border px-2 py-1'>
-            <button onclick='editRow(${i})' class='text-blue-500 mr-2'>Sửa</button>
-            <button onclick='deleteRow(${i + 1})' class='text-red-500'>Xoá</button>
-          </td>
-        </tr>
-      `).join('')}
-    </tbody>
-  `;
-  container.innerHTML = '';
-  container.appendChild(table);
-}
-
 function editRow(index) {
   editingIndex = index;
   const row = document.querySelectorAll("#dataTable table tbody tr")[index];
