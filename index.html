@@ -305,6 +305,8 @@ function editRow(index) {
   resultDiv.innerHTML = `<p class="font-bold text-yellow-700">🛠 Đang chỉnh sửa dòng ${index + 2}...</p>`;
   resultDiv.classList.remove('hidden');
   window.scrollTo({ top: 0, behavior: "smooth" });
+
+  setFormDisabled(false);
 }
 
   function handleUpdate() {
