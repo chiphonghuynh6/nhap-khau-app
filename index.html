@@ -201,166 +201,230 @@
       <label for="searchDecNo" class="font-medium">Tìm theo DEC NO:</label>
       <input id="searchDecNo" type="text" placeholder="Nhập DEC NO..." class="p-2 border border-gray-400 rounded w-full md:w-1/3" oninput="filterTableByDecNo()">
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-  <input type="text" id="searchSupplier" placeholder="Nhà cung cấp (SUPPLIER)" class="input input-bordered w-full" />
-  <input type="text" id="searchFWD" placeholder="FWD" class="input input-bordered w-full" />
-  <input type="date" id="searchETADateFrom" class="input input-bordered w-full" />
-  <input type="date" id="searchETADateTo" class="input input-bordered w-full" />
-</div>
-<button onclick="applyAdvancedFilter()" class="btn btn-primary mb-4">Lọc dữ liệu</button>
-    <button onclick="resetFilter()" class="btn btn-secondary mb-4 ml-2">Xóa lọc</button>
-
-
     
     <!-- Bảng dữ liệu -->
     <div id="dataTable" class="overflow-x-auto mt-6 bg-white rounded shadow p-4"></div>
   </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbz-xW0HzV0TCkS3dh9kl6fcExPsOMLZAjJTAxkRwIdYhbVoF5WPAVGF9xUD2SaHf08HFA/exec";
-let data = [];
+const API_URL = 'https://script.google.com/macros/s/AKfycbz-xW0HzV0TCkS3dh9kl6fcExPsOMLZAjJTAxkRwIdYhbVoF5WPAVGF9xUD2SaHf08HFA/exec';
 let editingIndex = -1;
+let fullData = [];
 
-// Lấy dữ liệu từ Google Sheets
 async function fetchData() {
   const res = await fetch(API_URL);
-  const result = await res.json();
-  data = result.data || [];
-  renderTable(data);
-}
-fetchData();
-
-// Hiển thị dữ liệu ra bảng
-function renderTable(dataArray) {
-  const tbody = document.querySelector("#dataTable tbody");
-  tbody.innerHTML = "";
-
-  dataArray.forEach((row, index) => {
-    const tr = document.createElement("tr");
-    tr.className = "border-b";
-    row.forEach(cell => {
-      const td = document.createElement("td");
-      td.className = "p-2 border";
-      td.textContent = cell;
-      tr.appendChild(td);
-    });
-
-    // Thêm nút Sửa / Xoá
-    const actionsTd = document.createElement("td");
-    actionsTd.className = "p-2 flex space-x-2";
-    actionsTd.innerHTML = `
-      <button onclick="editRow(${index})" class="text-blue-600">Sửa</button>
-      <button onclick="deleteRow(${index})" class="text-red-600">Xoá</button>
-    `;
-    tr.appendChild(actionsTd);
-
-    tbody.appendChild(tr);
-  });
+  fullData = await res.json();
+  renderTable(fullData);
+  document.getElementById('dataTable').classList.remove('hidden');
+  document.getElementById('showTableBtn').classList.add('hidden');
 }
 
-// Tìm kiếm dữ liệu
-document.getElementById("searchInput").addEventListener("input", function () {
-  const search = this.value.toLowerCase();
-  const filtered = data.filter(row =>
-    row[2].toLowerCase().includes(search) ||  // DEC NO
-    row[13].toLowerCase().includes(search) || // SUPPLIER
-    row[5].toLowerCase().includes(search) ||  // FWD
-    row[17].toLowerCase().includes(search)    // ETA DATE
-  );
-  renderTable(filtered);
-});
-
-// Export CSV
-function exportCSV(dataArray, filename = "export.csv") {
-  const csv = dataArray.map(row => row.map(cell => `"${cell}"`).join(",")).join("\n");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = filename;
-  link.click();
-}
-
-document.getElementById("exportBtn").addEventListener("click", () => exportCSV(data));
-document.getElementById("exportATCBtn").addEventListener("click", () => {
-  const filtered = data.filter(row => !row[19]); // ATC trống
-  exportCSV(filtered, "export-atc-trong.csv");
-});
-
-// Gửi dữ liệu thêm mới hoặc cập nhật
-document.getElementById("importForm").addEventListener("submit", async function (e) {
-  e.preventDefault();
-  const formData = new FormData(this);
-  const obj = {};
-  formData.forEach((value, key) => obj[key] = value);
-
-  if (editingIndex === -1) {
-    // Thêm mới
-    obj.method = "add";
-  } else {
-    // Cập nhật
-    obj.method = "update";
-    obj.rowIndex = editingIndex + 2;
+function renderTable(data) {
+  const container = document.getElementById('dataTable');
+  if (!data || data.length === 0) {
+    container.innerHTML = '<p>Không có dữ liệu.</p>';
+    return;
   }
 
-  const res = await fetch(API_URL, {
-    method: "POST",
-    body: JSON.stringify(obj),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  const headers = Object.keys(data[0]);
+  const table = document.createElement('table');
+  table.className = 'min-w-full border border-gray-300 text-sm';
 
-  const result = await res.json();
-  alert(result.message || "Thành công!");
-  this.reset();
-  editingIndex = -1;
-  fetchData();
-});
-
-// Sửa dữ liệu
-function editRow(index) {
-  const row = data[index];
-  const form = document.getElementById("importForm");
-  const inputs = form.querySelectorAll("input, textarea, select");
-  const keys = [
-    "getdocs", "factno", "decno", "loaihinh", "type", "fwd", "billno", "billdate",
-    "packages", "gw", "cbm", "ctnno", "pkgwcbm", "origin", "supplier", "invno",
-    "invdate", "amount", "term", "etadate", "atc", "remarks", "blfact"
-  ];
-
-  inputs.forEach((input, i) => {
-    let value = row[i] || "";
-    if (input.type === "date" && value.includes("/")) {
-      const parts = value.split("/");
-      const [day, month, year] = parts;
-      if (year.length === 4 && month.length <= 2 && day.length <= 2) {
-        value = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  const thead = `<thead><tr>${headers.map(h => `<th class='border px-2 py-1 bg-gray-200 sticky top-0 z-10'>${h}</th>`).join('')}<th class='border px-2 py-1 bg-gray-200 sticky top-0 z-10'>Hành động</th></tr></thead>`;
+  const tbody = data.map((row, i) => {
+    const cells = headers.map(h => {
+      let value = row[h];
+      if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value.trim())) {
+        const d = new Date(value);
+        if (!isNaN(d.getTime())) value = d.toLocaleDateString('vi-VN');
       }
+      return `<td class='border px-2 py-1'>${value}</td>`;
+    }).join('');
+    const actions = `<td class='border px-2 py-1 text-center'>
+      <button onclick="editRow(${i})" class="text-blue-600 hover:underline">Sửa</button> |
+      <button onclick="deleteRow(${i + 2})" class="text-red-600 hover:underline">Xoá</button>
+    </td>`;
+    return `<tr>${cells}${actions}</tr>`;
+  }).join('');
+
+  table.innerHTML = `${thead}<tbody>${tbody}</tbody>`;
+  container.innerHTML = '';
+  container.appendChild(table);
+}
+
+let originalRowData = {};
+
+function editRow(index) {
+  editingIndex = index;
+  const row = document.querySelectorAll("#dataTable table tbody tr")[index];
+  const cells = row.querySelectorAll("td");
+  const headers = Array.from(document.querySelectorAll("#dataTable table thead th")).map(th => th.innerText);
+  const form = document.getElementById("importForm");
+
+  headers.forEach((header, i) => {
+    if (header === "Hành động") return;
+
+    const input = form.querySelector(`[name="${header}"]`);
+    if (input) {
+      let value = cells[i].innerText;
+
+      // Kiểm tra nếu là input type="date" thì chuyển định dạng về yyyy-mm-dd
+     if (input.type === "date" && value) {
+  const parts = value.split(/[\/\-]/);
+  if (parts.length === 3) {
+    let day, month, year;
+
+    if (value.includes('/')) {
+      [day, month, year] = parts;
+    } else {
+      // Trường hợp ngày đã là yyyy-mm-dd hoặc yyyy/mm/dd
+      [year, month, day] = parts;
     }
-    input.value = value;
+
+    // Kiểm tra hợp lệ
+    if (year.length === 4 && month.length <= 2 && day.length <= 2) {
+      value = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    }
+  }
+}
+
+      input.value = value;
+    }
   });
 
-  editingIndex = index;
+  const resultDiv = document.getElementById('addResult');
+  resultDiv.innerHTML = `<p class="font-bold text-yellow-700">🛠 Đang chỉnh sửa dòng ${index + 2}...</p>`;
+  resultDiv.classList.remove('hidden');
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-// Xoá dữ liệu
-async function deleteRow(index) {
-  if (!confirm("Bạn có chắc muốn xoá dòng này?")) return;
+  function handleUpdate() {
+  const form = document.getElementById("importForm");
+  const inputs = form.querySelectorAll("input, select, textarea"); // tất cả trường dữ liệu
 
-  const res = await fetch(API_URL, {
-    method: "POST",
-    body: JSON.stringify({ method: "delete", rowIndex: index + 2 }),
-    headers: {
-      "Content-Type": "application/json",
-    },
+  const updatedData = {};
+  inputs.forEach(input => {
+    const key = input.name;
+    const value = input.value.trim();
+    // Nếu input trống, dùng lại dữ liệu gốc
+    updatedData[key] = value || originalRowData[key] || "";
   });
+    if (currentEditingRow) {
+    currentEditingRow.classList.remove("editing-row");
+    currentEditingRow = null;
+  }
 
-  const result = await res.json();
-  alert(result.message || "Đã xoá.");
+  // Gửi dữ liệu này lên API, ví dụ:
+  fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "update",
+      rowIndex: editingIndex + 2,
+      data: updatedData
+    }),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  }).then(response => {
+    // Xử lý sau cập nhật...
+  });
+}
+
+
+async function deleteRow(index) {
+  if (!confirm('Bạn có chắc chắn muốn xoá dòng này?')) return;
+
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'delete',
+        rowIndex: index
+      })
+    });
+    const result = await res.json();
+
+    document.getElementById('addResult').classList.remove('hidden');
+    document.getElementById('addResult').innerText = result.message || '🗑 Xoá thành công';
+    fetchData(); // Refresh table
+  } catch (error) {
+    alert('Có lỗi khi xoá dữ liệu!');
+    console.error(error);
+  }
+}
+
+
+function showTable() {
   fetchData();
 }
-</script>
 
+const form = document.getElementById('importForm');
+form.onsubmit = async e => {
+  e.preventDefault();
+  const formData = new FormData(form);
+  const obj = {};
+  formData.forEach((v, k) => { if (k !== 'pdfFile') obj[k] = v });
+
+  const resultDiv = document.getElementById('addResult');
+  if (editingIndex > -1) {
+    await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'update', index: editingIndex + 2, data: obj })
+    });
+    resultDiv.innerHTML = `<p class="font-bold text-blue-700">✅ Cập nhật thành công dòng ${editingIndex + 2}!</p>`;
+    editingIndex = -1;
+  } else {
+    await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'add', data: obj })
+    });
+    resultDiv.innerHTML = `<p class="font-bold text-green-700">✅ Thêm dòng mới thành công!</p>`;
+  }
+  resultDiv.classList.remove('hidden');
+  form.reset();
+  fetchData();
+};
+
+function filterTableByDecNo() {
+  const keyword = document.getElementById('searchDecNo').value.trim().toLowerCase();
+  const filtered = fullData.filter(row => (row["DEC NO"] || '').toLowerCase().includes(keyword));
+  renderTable(filtered);
+}
+
+// Tự động fetch khi tải trang
+window.onload = () => {
+  fetchData();
+};
+
+function exportCsv() {
+  let csv = '';
+  const headers = Object.keys(fullData[0]);
+  csv += headers.join(',') + '\n';
+  fullData.forEach(row => {
+    csv += headers.map(h => `"${row[h] || ''}"`).join(',') + '\n';
+  });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'danhsach_lohang.csv';
+  link.click();
+}
+
+function exportAtcEmptyCsv() {
+  const filtered = fullData.filter(row => !row["ATC"]);
+  let csv = '';
+  const headers = Object.keys(filtered[0] || {});
+  csv += headers.join(',') + '\n';
+  filtered.forEach(row => {
+    csv += headers.map(h => `"${row[h] || ''}"`).join(',') + '\n';
+  });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'lohang_chua_atc.csv';
+  link.click();
+}
+</script>
 </body>
 </html>
