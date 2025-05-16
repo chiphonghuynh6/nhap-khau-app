@@ -322,6 +322,22 @@ form.onsubmit = async e => {
   fetchData();
 };
 
+  function filterData() {
+  const q = document.getElementById("searchInput").value.toLowerCase();
+
+  const filtered = fullData.filter(row => {
+    const matchDEC = (row["DEC NO"] || '').toLowerCase().includes(q);
+    const matchINV = (row["INV NO"] || '').toLowerCase().includes(q);
+    const matchBILL = (row["BILL NO"] || '').toLowerCase().includes(q);
+    const atcEmpty = (row["ATC"] || '').trim() === ''; // chỉ lấy nếu ATC trống
+
+    return (matchDEC || matchFACT) && atcEmpty;
+  });
+
+  renderTable(filtered);
+}
+
+
 async function exportCsv() {
   const res = await fetch(API_URL, {
     method: 'POST',
