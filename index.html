@@ -240,6 +240,11 @@ async function fetchData() {
 
 function renderTable(data) {
   const container = document.getElementById('dataTable');
+  if (!container) {
+    console.error("Không tìm thấy phần tử có id 'dataTable'");
+    return;
+  }
+
   if (!data || data.length === 0) {
     container.innerHTML = '<p>Không có dữ liệu.</p>';
     return;
@@ -270,6 +275,7 @@ function renderTable(data) {
   container.innerHTML = '';
   container.appendChild(table);
 }
+
 
 let originalRowData = {};
 
