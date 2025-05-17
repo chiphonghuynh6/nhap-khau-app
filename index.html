@@ -408,7 +408,7 @@ window.onload = () => {
   fetchData();
 };
 
-function exportCsv() {
+/*function exportCsv() {
   let csv = '';
   const headers = Object.keys(fullData[0]);
   csv += headers.join(',') + '\n';
@@ -435,7 +435,26 @@ function exportAtcEmptyCsv() {
   link.href = URL.createObjectURL(blob);
   link.download = 'lohang_chua_atc.csv';
   link.click();
+}*/
+
+  async function exportCsv() {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'exportCsv' })
+  });
+  const result = await res.json();
+  if (result.url) window.open(result.url, '_blank');
 }
+
+async function exportAtcEmptyCsv() {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'exportAtcEmptyCsv' })
+  });
+  const result = await res.json();
+  if (result.url) window.open(result.url, '_blank');
+}
+
 
   // 🆕 Khoá/mở form
 function setFormDisabled(disabled) {
