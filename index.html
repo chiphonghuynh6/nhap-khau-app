@@ -243,34 +243,32 @@ function renderTable(data) {
 
 function editRow(index) {
   editingIndex = index;
-  const row = document.querySelectorAll("#dataTable table tbody tr")[index];
-  const cells = row.querySelectorAll("td");
-  const headers = Array.from(document.querySelectorAll("#dataTable table thead th")).map(th => th.innerText);
+  const rowData = fullData[index];
   const form = document.getElementById("importForm");
 
-  headers.forEach((header, i) => {
-    if (header === "Hành động") return;
-
-    const input = form.querySelector(`[name="${header}"]`);
+  // Đổ dữ liệu vào form
+  Object.keys(rowData).forEach(field => {
+    const input = form.querySelector(`[name="${field}"]`);
     if (input) {
-      let value = cells[i].innerText;
+      let value = rowData[field];
       if (input.type === "date" && value) {
-        const parts = value.split(/[\/\-]/);
-        if (parts.length === 3) {
-          let day, month, year;
-          if (value.includes('/')) {
-            [day, month, year] = parts;
-          } else {
-            [year, month, day] = parts;
-          }
-          if (year.length === 4 && month.length <= 2 && day.length <= 2) {
-            value = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-          }
+        // Nếu là ngày dạng "dd/mm/yyyy" hoặc ISO, chuyển sang yyyy-mm-dd
+        const d = new Date(value);
+        if (!isNaN(d.getTime())) {
+          value = d.toISOString().slice(0, 10);
         }
       }
-      input.value = value;
+      input.value = value || "";
     }
   });
+
+  const resultDiv = document.getElementById('addResult');
+  resultDiv.innerHTML = `<p class="font-bold text-yellow-700">🛠 Đang chỉnh sửa dòng ${index + 2}...</p>`;
+  resultDiv.classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  setFormDisabled(false);
+}
 
   const resultDiv = document.getElementById('addResult');
   resultDiv.innerHTML = `<p class="font-bold text-yellow-700">🛠 Đang chỉnh sửa dòng ${index + 2}...</p>`;
