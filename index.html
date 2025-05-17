@@ -187,251 +187,135 @@
   </div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbwTWd6ChOgEpCJcBkwPNrse_aA9vTPgdogOO_IlabrwGWtciT1BZmyi-q3cZYt8iq8/exec';
-let editingIndex = -1;
-let fullData = [];
+const API_URL = "https://script.google.com/macros/s/AKfycbz-xW0HzV0TCkS3dh9kl6fcExPsOMLZAjJTAxkRwIdYhbVoF5WPAVGF9xUD2SaHf08HFA/exec";
+let editingIndex = null;
 
-// Helper: Chuyển tên trường từ trước (có dấu cách) sang snake_case
-function mapFieldName(field) {
-  // Nếu bạn chuyển tên trường ở backend, hãy đồng bộ tên trường ở đây với backend!
-  return field.replace(/ /g, "_");
-}
-
-async function fetchData() {
-  try {
-    const res = await fetch(API_URL);
-    fullData = await res.json();
-    renderTable(fullData);
-    document.getElementById('dataTable').classList.remove('hidden');
-  } catch (err) {
-    console.error("❌ Lỗi khi fetch dữ liệu:", err);
-  }
-}
-
-function renderTable(data) {
-  const container = document.getElementById('dataTable');
-  if (!data || data.length === 0) {
-    container.innerHTML = '<p>Không có dữ liệu.</p>';
-    return;
-  }
-
-  const headers = Object.keys(data[0]);
-  const table = document.createElement('table');
-  table.className = 'min-w-full border border-gray-300 text-sm';
-
-  const thead = `<thead><tr>${headers.map(h => `<th class='border px-2 py-1 bg-gray-200 sticky top-0 z-10'>${h}</th>`).join('')}<th class='border px-2 py-1 bg-gray-200 sticky top-0 z-10'>Hành động</th></tr></thead>`;
-  const tbody = data.map((row, i) => {
-    const cells = headers.map(h => {
-      let value = row[h];
-      if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value.trim())) {
-        const d = new Date(value);
-        if (!isNaN(d.getTime())) value = d.toLocaleDateString('vi-VN');
-      }
-      return `<td class='border px-2 py-1'>${value || ''}</td>`;
-    }).join('');
-    const actions = `<td class='border px-2 py-1 text-center'>
-      <button onclick="editRow(${i})" class="text-blue-600 hover:underline">Sửa</button> |
-      <button onclick="deleteRow(${i + 2})" class="text-red-600 hover:underline">Xoá</button>
-    </td>`;
-    return `<tr ${editingIndex === i ? 'class="editing-row"' : ''}>${cells}${actions}</tr>`;
-  }).join('');
-
-  table.innerHTML = `${thead}<tbody>${tbody}</tbody>`;
-  container.innerHTML = '';
-  container.appendChild(table);
-}
-
-function editRow(index) {
-  editingIndex = index;
-  const rowData = fullData[index];
-  const form = document.getElementById("importForm");
-
-  // Lấy toàn bộ input/select trong form
-  form.querySelectorAll('input[name], select[name], textarea[name]').forEach(input => {
-    // Tìm key trong rowData: thử theo name, hoặc thay _ thành dấu cách
-    let field = input.name;
-    let value = rowData[field];
-    if (typeof value === "undefined") {
-      // Thử thay _ thành dấu cách để map ngược
-      const altField = field.replace(/_/g, " ");
-      value = rowData[altField];
-    }
-    if (typeof value === "undefined") value = "";
-    // Nếu là input date, chuẩn hóa yyyy-mm-dd
-    if (input.type === "date" && value) {
-      let dateValue = value;
-      if (/^\d{4}-\d{2}-\d{2}/.test(value)) {
-        dateValue = value.slice(0, 10);
-      } else if (/^\d{2}\/\d{2}\/\d{4}$/.test(value)) {
-        const [day, month, year] = value.split("/");
-        dateValue = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-      }
-      input.value = dateValue;
-    } else {
-      input.value = value;
-    }
-  });
-
-  const resultDiv = document.getElementById('addResult');
-  resultDiv.innerHTML = `<p class="font-bold text-yellow-700">🛠 Đang chỉnh sửa dòng ${index + 2}...</p>`;
-  resultDiv.classList.remove('hidden');
-  window.scrollTo({ top: 0, behavior: "smooth" });
-
-  setFormDisabled(false);
-}
-
-
-
-async function deleteRow(index) {
-  if (!confirm(`Bạn có chắc chắn muốn xoá dòng ${index}?`)) return;
-
-  try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'delete',
-        rowIndex: index  // Dòng cần xoá (chỉ số bắt đầu từ 2 vì dòng 1 là header)
-      }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-      alert(`✅ Đã xoá dòng ${index} thành công.`);
-      fetchData(); // Tải lại dữ liệu mới
-    } else {
-      alert(`❌ Xoá không thành công: ${result.message || 'Lỗi không xác định.'}`);
-    }
-  } catch (err) {
-    console.error("Lỗi khi xoá:", err);
-    alert("❌ Đã xảy ra lỗi khi kết nối để xoá.");
-  }
-}
-
-
-function showTable() {
-  fetchData();
-}
-
-function filterTableByDecNo() {
-  const keyword = document.getElementById('searchDecNo').value.trim().toLowerCase();
-  const filtered = fullData.filter(row => ((row["DEC_NO"] || '') + '').toLowerCase().includes(keyword));
-  renderTable(filtered);
-}
-
-// Tự động fetch khi tải trang và khoá form
-window.onload = () => {
-  fetchData();
-  setFormDisabled(true);
-};
-
-function setFormDisabled(disabled) {
-  const form = document.getElementById('importForm');
-  const elements = form.querySelectorAll('input, select, textarea, button[type="submit"]');
-  elements.forEach(el => {
-    if (el.type !== 'button') el.disabled = disabled;
-  });
-}
-
-// Nút "Thêm mới"
-document.getElementById('addNewBtn').addEventListener('click', () => {
-  editingIndex = -1;
-  document.getElementById('importForm').reset();
-  setFormDisabled(false);
-  document.getElementById('addResult').classList.add('hidden');
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
-
-// Sự kiện submit form (thêm mới & cập nhật)
-const form = document.getElementById('importForm');
-form.onsubmit = async e => {
-  e.preventDefault();
-  const formData = new FormData(form); // FormData sẽ lấy cả file PDF nếu có
-
-  // Nếu đang sửa thì thêm action, index vào formData
-  if (editingIndex > -1) {
-    formData.append('action', 'update');
-    formData.append('index', editingIndex + 2);
-  } else {
-    formData.append('action', 'add');
-  }
-  // Gửi formData, không cần chuyển sang JSON, giữ nguyên dạng multipart
-  const resultDiv = document.getElementById('addResult');
-  await fetch(API_URL, {
-    method: 'POST',
-    body: formData
-    // KHÔNG set headers Content-Type, để fetch tự động set multipart!
-  });
-  resultDiv.innerHTML = editingIndex > -1
-    ? `<p class="font-bold text-blue-700">✅ Cập nhật thành công dòng ${editingIndex + 2}!</p>`
-    : `<p class="font-bold text-green-700">✅ Thêm dòng mới thành công!</p>`;
-  editingIndex = -1;
-  resultDiv.classList.remove('hidden');
-  form.reset();
-  setFormDisabled(true);
-  fetchData();
-};
-
-// Export CSV toàn bộ
-async function exportCsv() {
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'exportCsv' })
-  });
-  const result = await res.json();
-  if (result.url) window.open(result.url, '_blank');
-}
-
-// Export CSV chỉ những dòng ATC trống
-async function exportAtcEmptyCsv() {
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'exportAtcEmptyCsv' })
-  });
-  const result = await res.json();
-  if (result.url) window.open(result.url, '_blank');
-}
-
-  document.getElementById("importForm").addEventListener("submit", async function (e) {
+// Gửi form thêm hoặc cập nhật dữ liệu
+document.getElementById("importForm").addEventListener("submit", async function (e) {
   e.preventDefault();
   const formData = new FormData(this);
   const data = {};
-  formData.forEach((value, key) => {
-    data[key] = value;
-  });
+  formData.forEach((value, key) => data[key] = value);
 
-  // Nếu đang chỉnh sửa
-  if (editingIndex !== -1) {
-    data.rowIndex = editingIndex + 2; // dòng Google Sheet bắt đầu từ 2 (bỏ dòng tiêu đề)
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'update', data }),
-    });
-    const result = await res.text();
-
-    document.getElementById("addResult").innerHTML = `<p class="text-green-700 font-bold">✅ Đã cập nhật dòng ${editingIndex + 2}!</p>`;
-  } else {
-    // Thêm mới
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'add', data }),
-    });
-    const result = await res.text();
-
-    document.getElementById("addResult").innerHTML = `<p class="text-green-700 font-bold">✅ Đã thêm dòng mới!</p>`;
+  if (editingIndex !== null) {
+    data.index = editingIndex;
   }
 
-  document.getElementById("addResult").classList.remove("hidden");
-  this.reset();
-  editingIndex = -1;
-  fetchData(); // cập nhật lại bảng
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: { "Content-Type": "application/json" }
+    });
+
+    if (!res.ok) throw new Error("Lỗi mạng");
+
+    document.getElementById("addResult").textContent = "✅ Đã lưu dữ liệu!";
+    document.getElementById("addResult").classList.remove("hidden");
+    this.reset();
+    editingIndex = null;
+    showData();
+  } catch (error) {
+    alert("❌ Lỗi khi gửi dữ liệu: " + error.message);
+  }
 });
 
-// Note: Xử lý upload file PDF chưa làm! Nếu muốn upload file bạn cần code thêm ở đây.
+// Hiển thị dữ liệu từ Google Sheets
+async function showData() {
+  const res = await fetch(API_URL);
+  const rows = await res.json();
 
+  const tbody = document.getElementById("tableBody");
+  tbody.innerHTML = "";
+
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    const tr = document.createElement("tr");
+
+    row.forEach(cell => {
+      const td = document.createElement("td");
+      td.className = "border px-2 py-1 text-sm";
+      td.textContent = cell;
+      tr.appendChild(td);
+    });
+
+    // Thêm nút sửa / xoá
+    const tdAction = document.createElement("td");
+    tdAction.className = "border px-2 py-1 text-sm";
+    tdAction.innerHTML = `
+      <button class="text-blue-500 underline mr-2" onclick="editRow(${i})">Sửa</button>
+      <button class="text-red-500 underline" onclick="deleteRow(${i})">Xoá</button>
+    `;
+    tr.appendChild(tdAction);
+    tbody.appendChild(tr);
+  }
+}
+
+// Tìm kiếm theo DEC NO hoặc FACT NO
+document.getElementById("searchInput").addEventListener("input", function () {
+  const value = this.value.toLowerCase();
+  const rows = document.querySelectorAll("#tableBody tr");
+
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(value) ? "" : "none";
+  });
+});
+
+// Sửa dòng
+async function editRow(index) {
+  const res = await fetch(API_URL);
+  const rows = await res.json();
+  const row = rows[index];
+  const fields = document.querySelectorAll("#importForm input, #importForm select");
+
+  fields.forEach((field, i) => {
+    if (row[i] !== undefined) field.value = row[i];
+  });
+
+  editingIndex = index;
+  document.getElementById("addResult").textContent = "📝 Đang sửa dòng #" + index;
+  document.getElementById("addResult").classList.remove("hidden");
+}
+
+// Xoá dòng
+async function deleteRow(index) {
+  if (!confirm("Bạn có chắc muốn xoá dòng này?")) return;
+
+  try {
+    const res = await fetch(API_URL + `?delete=${index}`, { method: "GET" });
+    if (!res.ok) throw new Error("Không thể xoá");
+    showData();
+  } catch (err) {
+    alert("❌ Xoá thất bại: " + err.message);
+  }
+}
+
+// Xuất CSV
+async function exportCsv(filterAtcEmpty = false) {
+  const res = await fetch(API_URL);
+  const rows = await res.json();
+
+  let csvContent = rows
+    .filter((row, i) => {
+      if (i === 0) return true;
+      return !filterAtcEmpty || row[21] === ""; // Cột ATC
+    })
+    .map(e => e.map(v => `"${v}"`).join(","))
+    .join("\n");
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filterAtcEmpty ? "atc_empty_data.csv" : "all_data.csv";
+  link.click();
+}
+
+// Gọi khi trang load
+document.addEventListener("DOMContentLoaded", showData);
 </script>
+
 </body>
 </html>
