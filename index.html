@@ -166,23 +166,31 @@
     <!-- Thông báo kết quả -->
     <div id="addResult" class="mt-4 hidden bg-green-50 border border-green-400 p-4 rounded text-green-700"></div>
 
-    <!-- Nút xem bảng và export -->
-    <div class="mt-2" id="showTableBtn">
-      <button onclick="showTable()" class="text-blue-600 underline hover:text-blue-800">👉 Xem toàn bộ danh sách lô hàng</button>
+  
+    <div class="mt-4">
+      <label for="pdfUpload" class="block font-medium mb-2">Upload file PDF lên Google Drive</label>
+      <div class="flex items-center gap-4">
+        <input type="file" id="pdfUpload" accept="application/pdf" class="file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:bg-blue-500 file:text-white hover:file:bg-blue-600">
+        <button onclick="uploadPDF()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Upload PDF</button>
+      </div>
     </div>
 
-    <div class="mt-4 flex flex-wrap gap-2">
+    <div id="addResult" class="mt-4 hidden bg-green-50 border border-green-400 p-4 rounded text-green-700"></div>
+
+    <div class="mt-4">
+      <button onclick="showTable()" class="text-blue-600 underline hover:text-blue-800">👉 Xem danh sách</button>
+    </div>
+
+    <div class="mt-4 flex gap-2 flex-wrap">
       <button onclick="exportCsv()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">📤 Xuất toàn bộ CSV</button>
       <button onclick="exportAtcEmptyCsv()" class="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700">📤 Xuất ATC trống CSV</button>
     </div>
-    
-    <!-- Tìm kiếm -->
+
     <div class="mt-4 flex items-center gap-2">
       <label for="searchDecNo" class="font-medium">Tìm theo DEC_NO:</label>
-      <input id="searchDecNo" type="text" placeholder="Nhập DEC_NO..." class="p-2 border border-gray-400 rounded w-full md:w-1/3" oninput="filterTableByDecNo()">
+      <input id="searchDecNo" type="text" class="p-2 border rounded w-full md:w-1/3" oninput="filterTableByDecNo()" />
     </div>
-    
-    <!-- Bảng dữ liệu -->
+
     <div id="dataTable" class="overflow-x-auto mt-6 bg-white rounded shadow p-4"></div>
   </div>
 
@@ -191,214 +199,159 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbyv4E1dLtEpRxdmS7cSbcnz
 let editingIndex = -1;
 let fullData = [];
 
-// Helper: Chuyển tên trường từ trước (có dấu cách) sang snake_case
-function mapFieldName(field) {
-  // Nếu bạn chuyển tên trường ở backend, hãy đồng bộ tên trường ở đây với backend!
-  return field.replace(/ /g, "_");
+function formatToDMY(isoDate) {
+  const [y, m, d] = isoDate.split('-');
+  return `${d}/${m}/${y}`;
 }
 
-async function fetchData() {
-  try {
-    const res = await fetch(API_URL);
-    fullData = await res.json();
-    renderTable(fullData);
-    document.getElementById('dataTable').classList.remove('hidden');
-  } catch (err) {
-    console.error("❌ Lỗi khi fetch dữ liệu:", err);
-  }
+function formatToISO(dmyDate) {
+  const [d, m, y] = dmyDate.split('/');
+  return `${y}-${m}-${d}`;
+}
+
+function uploadPDF() {
+  const file = document.getElementById('pdfUpload').files[0];
+  if (!file || file.type !== 'application/pdf') return alert('Chọn file PDF hợp lệ');
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('action', 'uploadPdf');
+
+  fetch(API_URL, {
+    method: 'POST',
+    body: formData
+  }).then(res => res.json()).then(r => {
+    alert('Upload thành công: ' + r.url);
+  }).catch(err => alert('Lỗi upload: ' + err.message));
+}
+
+function exportToCSV(data, filename) {
+  const headers = Object.keys(data[0]);
+  const csv = [headers.join(',')];
+  data.forEach(row => {
+    const line = headers.map(h => `"${(row[h] || '').replace(/"/g, '""')}"`).join(',');
+    csv.push(line);
+  });
+  const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function exportCsv() {
+  const res = await fetch(API_URL);
+  const data = await res.json();
+  exportToCSV(data, 'full_export.csv');
+}
+
+async function exportAtcEmptyCsv() {
+  const res = await fetch(API_URL);
+  const data = await res.json();
+  const filtered = data.filter(row => !row.ATC);
+  exportToCSV(filtered, 'atc_empty_export.csv');
+}
+
+function showTable() {
+  fetch(API_URL).then(res => res.json()).then(data => {
+    fullData = data;
+    renderTable(data);
+  });
 }
 
 function renderTable(data) {
-  const container = document.getElementById('dataTable');
-  if (!data || data.length === 0) {
-    container.innerHTML = '<p>Không có dữ liệu.</p>';
-    return;
-  }
-
   const headers = Object.keys(data[0]);
-  const table = document.createElement('table');
-  table.className = 'min-w-full border border-gray-300 text-sm';
-
-  const thead = `<thead><tr>${headers.map(h => `<th class='border px-2 py-1 bg-gray-200 sticky top-0 z-10'>${h}</th>`).join('')}<th class='border px-2 py-1 bg-gray-200 sticky top-0 z-10'>Hành động</th></tr></thead>`;
-  const tbody = data.map((row, i) => {
-    const cells = headers.map(h => {
-      let value = row[h];
-      if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value.trim())) {
-        const d = new Date(value);
-        if (!isNaN(d.getTime())) value = d.toLocaleDateString('vi-VN');
-      }
-      return `<td class='border px-2 py-1'>${value || ''}</td>`;
-    }).join('');
-    const actions = `<td class='border px-2 py-1 text-center'>
+  let html = '<table class="min-w-full border text-sm"><thead><tr>';
+  html += headers.map(h => `<th class="border px-2 py-1 bg-gray-200">${h}</th>`).join('');
+  html += '<th class="border px-2 py-1 bg-gray-200">Hành động</th></tr></thead><tbody>';
+  html += data.map((row, i) => {
+    const cells = headers.map(h => `<td class="border px-2 py-1">${row[h] || ''}</td>`).join('');
+    const action = `<td class="border px-2 py-1 text-center">
       <button onclick="editRow(${i})" class="text-blue-600 hover:underline">Sửa</button> |
       <button onclick="deleteRow(${i + 2})" class="text-red-600 hover:underline">Xoá</button>
     </td>`;
-    return `<tr ${editingIndex === i ? 'class="editing-row"' : ''}>${cells}${actions}</tr>`;
+    return `<tr ${editingIndex === i ? 'class="editing-row"' : ''}>${cells}${action}</tr>`;
   }).join('');
-
-  table.innerHTML = `${thead}<tbody>${tbody}</tbody>`;
-  container.innerHTML = '';
-  container.appendChild(table);
+  html += '</tbody></table>';
+  document.getElementById('dataTable').innerHTML = html;
 }
 
 function editRow(index) {
   editingIndex = index;
-  const rowData = fullData[index];
-  form.onsubmit = async e => {
-  e.preventDefault();
-  const formData = new FormData(form);
+  const row = fullData[index];
+  const form = document.getElementById('importForm');
 
-  if (editingIndex > -1) {
-    formData.append('action', 'update');
-    formData.append('index', editingIndex + 2);
-  } else {
-    formData.append('action', 'add');
-  }
+  form.querySelectorAll('[name]').forEach(input => {
+    let val = row[input.name] || '';
+    if (input.type === 'date' && val.includes('/')) val = formatToISO(val);
+    input.value = val;
+  });
 
-  const resultDiv = document.getElementById('addResult');
-  try {
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      body: formData
-    });
-    const result = await res.json();
-
-    if (result.error) {
-      resultDiv.innerHTML = `<p class="font-bold text-red-700">❌ Lỗi: ${result.error}</p>`;
-    } else {
-      resultDiv.innerHTML = `<p class="font-bold text-green-700">✅ ${result.message}</p>`;
-      form.reset();
-      editingIndex = -1;
-      setFormDisabled(true);
-      fetchData();
-    }
-  } catch (error) {
-    resultDiv.innerHTML = `<p class="font-bold text-red-700">❌ Lỗi gửi dữ liệu: ${error.message}</p>`;
-  }
-
-  resultDiv.classList.remove('hidden');
-};
-
-
-  const resultDiv = document.getElementById('addResult');
-  resultDiv.innerHTML = `<p class="font-bold text-yellow-700">🛠 Đang chỉnh sửa dòng ${index + 2}...</p>`;
-  resultDiv.classList.remove('hidden');
-  window.scrollTo({ top: 0, behavior: "smooth" });
-
+  document.getElementById('addResult').innerHTML = `<p class="font-bold text-yellow-700">🛠 Đang chỉnh sửa dòng ${index + 2}</p>`;
+  document.getElementById('addResult').classList.remove('hidden');
   setFormDisabled(false);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function deleteRow(index) {
+  const item = fullData[index - 2];
+  if (!confirm(`Bạn có chắc muốn xoá dòng có DEC_NO: ${item?.DEC_NO || 'không rõ'}?`)) return;
 
-
-async function deleteRow(index) {
-  if (!confirm('Bạn có chắc chắn muốn xoá dòng này?')) return;
-
-  try {
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'delete',
-        index: index // Thống nhất dùng 'index'
-      })
-    });
-    const result = await res.json();
-
-    document.getElementById('addResult').classList.remove('hidden');
-    document.getElementById('addResult').innerText = result.message || '🗑 Xoá thành công';
-    fetchData(); // Refresh table
-    setFormDisabled(true);
-  } catch (error) {
-    alert('Có lỗi khi xoá dữ liệu!');
-    console.error(error);
-  }
-}
-
-function showTable() {
-  fetchData();
+  fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'delete', index })
+  }).then(r => r.json()).then(result => {
+    alert(result.message || 'Xoá thành công!');
+    showTable();
+  }).catch(err => alert('Lỗi xoá: ' + err.message));
 }
 
 function filterTableByDecNo() {
-  const keyword = document.getElementById('searchDecNo').value.trim().toLowerCase();
-  const filtered = fullData.filter(row => ((row["DEC_NO"] || '') + '').toLowerCase().includes(keyword));
+  const keyword = document.getElementById('searchDecNo').value.toLowerCase().trim();
+  const filtered = fullData.filter(row => (row.DEC_NO || '').toLowerCase().includes(keyword));
   renderTable(filtered);
 }
 
-// Tự động fetch khi tải trang và khoá form
-window.onload = () => {
-  fetchData();
-  setFormDisabled(true);
-};
-
 function setFormDisabled(disabled) {
-  const form = document.getElementById('importForm');
-  const elements = form.querySelectorAll('input, select, textarea, button[type="submit"]');
-  elements.forEach(el => {
-    if (el.type !== 'button') el.disabled = disabled;
-  });
+  document.querySelectorAll('#importForm input, #importForm select, #importForm textarea, #importForm button[type=submit]')
+    .forEach(el => el.disabled = disabled);
 }
 
-// Nút "Thêm mới"
 document.getElementById('addNewBtn').addEventListener('click', () => {
   editingIndex = -1;
   document.getElementById('importForm').reset();
   setFormDisabled(false);
   document.getElementById('addResult').classList.add('hidden');
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
-// Sự kiện submit form (thêm mới & cập nhật)
-const form = document.getElementById('importForm');
-form.onsubmit = async e => {
+document.getElementById('importForm').onsubmit = async e => {
   e.preventDefault();
-  const formData = new FormData(form); // FormData sẽ lấy cả file PDF nếu có
-
-  // Nếu đang sửa thì thêm action, index vào formData
+  const formData = new FormData(document.getElementById('importForm'));
   if (editingIndex > -1) {
     formData.append('action', 'update');
     formData.append('index', editingIndex + 2);
   } else {
     formData.append('action', 'add');
   }
-  // Gửi formData, không cần chuyển sang JSON, giữ nguyên dạng multipart
-  const resultDiv = document.getElementById('addResult');
-  await fetch(API_URL, {
-    method: 'POST',
-    body: formData
-    // KHÔNG set headers Content-Type, để fetch tự động set multipart!
-  });
-  resultDiv.innerHTML = editingIndex > -1
-    ? `<p class="font-bold text-blue-700">✅ Cập nhật thành công dòng ${editingIndex + 2}!</p>`
-    : `<p class="font-bold text-green-700">✅ Thêm dòng mới thành công!</p>`;
-  editingIndex = -1;
-  resultDiv.classList.remove('hidden');
-  form.reset();
-  setFormDisabled(true);
-  fetchData();
+
+  try {
+    const res = await fetch(API_URL, { method: 'POST', body: formData });
+    const result = await res.json();
+    document.getElementById('addResult').innerHTML = `<p class="font-bold ${editingIndex > -1 ? 'text-blue-700' : 'text-green-700'}">
+      ✅ ${editingIndex > -1 ? 'Cập nhật' : 'Thêm'} thành công!
+    </p>`;
+    editingIndex = -1;
+    document.getElementById('importForm').reset();
+    setFormDisabled(true);
+    showTable();
+  } catch (err) {
+    alert('Lỗi gửi dữ liệu: ' + err.message);
+  }
 };
-
-// Export CSV toàn bộ
-async function exportCsv() {
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'exportCsv' })
-  });
-  const result = await res.json();
-  if (result.url) window.open(result.url, '_blank');
-}
-
-// Export CSV chỉ những dòng ATC trống
-async function exportAtcEmptyCsv() {
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'exportAtcEmptyCsv' })
-  });
-  const result = await res.json();
-  if (result.url) window.open(result.url, '_blank');
-}
-
-// Note: Xử lý upload file PDF chưa làm! Nếu muốn upload file bạn cần code thêm ở đây.
-
 </script>
 </body>
 </html>
