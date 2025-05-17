@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
@@ -7,205 +6,180 @@
   <title>Quản lý nhập khẩu</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-  .editing-row {
-    background-color: #FEF9C3; /* màu vàng nhạt */
-  }
-</style>
+    .editing-row {
+      background-color: #FEF9C3; /* màu vàng nhạt */
+    }
+  </style>
 </head>
 <body class="bg-gray-50 p-4">
   <div class="max-w-6xl mx-auto bg-white p-4 rounded-lg shadow">
     <h1 class="text-xl font-semibold mb-4">Thông tin hàng nhập</h1>
 
-      <!-- Nút Thêm -->
-<div class="mb-4">
-  <button id="addNewBtn" type="button" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-    ➕ Thêm mới
-  </button>
-</div>
-<!-- Form nhập liệu -->
-<form id="importForm" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+    <!-- Nút Thêm -->
+    <div class="mb-4">
+      <button id="addNewBtn" type="button" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+        ➕ Thêm mới
+      </button>
+    </div>
+    <!-- Form nhập liệu -->
+    <form id="importForm" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
 
-  <!-- Thông tin chung -->
+      <!-- Thông tin chung -->
+      <fieldset class="border p-4 space-y-2">
+        <legend class="font-semibold">Thông tin chung</legend>
 
-  <fieldset class="border p-4 space-y-2">
-    <legend class="font-semibold">Thông tin chung</legend>
+        <div>
+          <label class="block font-medium mb-1">GET_DOCS</label>
+          <input type="date" name="GET_DOCS" class="w-full border rounded px-2 py-1"/>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">DEC_NO</label>
+          <input type="text" name="DEC_NO" class="w-full border rounded px-2 py-1"/>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">FACT_NO</label>
+          <select name="FACT_NO" class="w-full border rounded px-2 py-1">
+            <option></option>
+            <option>18A</option>
+            <option>B0SZ</option>
+            <option>B0M1</option>
+            <option>B0M2</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">LOAI_HINH</label>
+          <select name="LOAI_HINH" class="w-full border rounded px-2 py-1">
+            <option></option>
+            <option>A12</option>
+            <option>E21</option>
+            <option>H11</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">FWD</label>
+          <input type="text" name="FWD" class="w-full border rounded px-2 py-1"/>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">SUPPLIER</label>
+          <input type="text" name="SUPPLIER" class="w-full border rounded px-2 py-1"/>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">TYPE</label>
+          <select name="TYPE" class="w-full border rounded px-2 py-1">
+            <option></option>
+            <option>CONT</option>
+            <option>CFS</option>
+            <option>NGOAI_QUAN</option>
+            <option>BY_TRUCK</option>
+            <option>DHL</option>
+            <option>AIR</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">ORIGIN</label>
+          <input type="text" name="ORIGIN" class="w-full border rounded px-2 py-1"/>
+        </div>
+      </fieldset>
 
-<div>
-  <label class="block font-medium mb-1">GET DOCS</label>
-  <input type="date" name="GET DOCS" class="w-full border rounded px-2 py-1"/>
-</div>
+      <!-- Thông tin vận đơn -->
+      <fieldset class="border p-4 space-y-2">
+        <legend class="font-semibold">Thông tin vận đơn</legend>
 
-<div>
-  <label class="block font-medium mb-1">DEC NO</label>
-  <input type="text" name="DEC NO" class="w-full border rounded px-2 py-1"/>
-</div>
+        <div>
+          <label class="block font-medium mb-1">BILL_NO</label>
+          <input type="text" name="BILL_NO" class="w-full border rounded px-2 py-1"/>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">BILL_DATE</label>
+          <input type="date" name="BILL_DATE" class="w-full border rounded px-2 py-1"/>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">PACKAGES</label>
+          <input type="number" name="PACKAGES" class="w-full border rounded px-2 py-1"/>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">GW</label>
+          <input type="number" name="GW" class="w-full border rounded px-2 py-1"/>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">CBM</label>
+          <input type="number" name="CBM" class="w-full border rounded px-2 py-1"/>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">CTN_NO</label>
+          <input type="text" name="CTN_NO" class="w-full border rounded px-2 py-1"/>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">ETA_DATE</label>
+          <input type="date" name="ETA_DATE" class="w-full border rounded px-2 py-1"/>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">ATC</label>
+          <input type="date" name="ATC" class="w-full border rounded px-2 py-1"/>
+        </div>
+      </fieldset>
 
-<div>
-  <label class="block font-medium mb-1">FACT NO</label>
-  <select name="FACT NO" class="w-full border rounded px-2 py-1">
-    <option></option>
-    <option>18A</option>
-    <option>B0SZ</option>
-    <option>B0M1</option>
-    <option>B0M2</option>
-  </select>
-</div>
+      <!-- Thông tin hóa đơn -->
+      <fieldset class="border p-4 space-y-2">
+        <legend class="font-semibold">Thông tin hóa đơn</legend>
 
-<div>
-  <label class="block font-medium mb-1">LOẠI HÌNH</label>
-  <select name="LOẠI HÌNH" class="w-full border rounded px-2 py-1">
-    <option></option>
-    <option>A12</option>
-    <option>E21</option>
-    <option>H11</option>
-  </select>
-</div>
+        <div>
+          <label class="block font-medium mb-1">INV_NO</label>
+          <input type="text" name="INV_NO" class="w-full border rounded px-2 py-1"/>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">INV_DATE</label>
+          <input type="date" name="INV_DATE" class="w-full border rounded px-2 py-1"/>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">AMOUNT</label>
+          <input type="text" name="AMOUNT" class="w-full border rounded px-2 py-1"/>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">TERM</label>
+          <select name="TERM" class="w-full border rounded px-2 py-1">
+            <option></option>
+            <option>CIF</option>
+            <option>FOB</option>
+            <option>C&F</option>
+            <option>FCA</option>
+            <option>EXW</option>
+            <option>CPT</option>
+            <option>DAT</option>
+            <option>DAP</option>
+            <option>CIP</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-medium">File PDF</label>
+          <input type="file" id="pdfFile" class="w-full border rounded px-2 py-1"/>
+        </div>
+      </fieldset>
 
-<div>
-  <label class="block font-medium mb-1">FWD</label>
-  <input type="text" name="FWD" class="w-full border rounded px-2 py-1"/>
-</div>
+      <div class="md:col-span-3">
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded w-full md:w-auto">
+          Lưu
+        </button>
+      </div>
+    </form>
 
-<div>
-  <label class="block font-medium mb-1">SUPPLIER</label>
-  <input type="text" name="SUPPLIER" class="w-full border rounded px-2 py-1"/>
-</div>
+    <!-- Thông báo kết quả -->
+    <div id="addResult" class="mt-4 hidden bg-green-50 border border-green-400 p-4 rounded text-green-700"></div>
 
-<div>
-  <label class="block font-medium mb-1">TYPE</label>
-  <select name="TYPE" class="w-full border rounded px-2 py-1">
-    <option></option>
-    <option>CONT</option>
-    <option>CFS</option>
-    <option>NGOAI QUAN</option>
-    <option>BY TRUCK</option>
-    <option>DHL</option>
-    <option>AIR</option>
-  </select>
-</div>
+    <!-- Nút xem bảng và export -->
+    <div class="mt-2" id="showTableBtn">
+      <button onclick="showTable()" class="text-blue-600 underline hover:text-blue-800">👉 Xem toàn bộ danh sách lô hàng</button>
+    </div>
 
-<div>
-  <label class="block font-medium mb-1">ORIGIN</label>
-  <input type="text" name="ORIGIN" class="w-full border rounded px-2 py-1"/>
-</div>
-
-  </fieldset>
-
-  <!-- Thông tin vận đơn -->
-
-  <fieldset class="border p-4 space-y-2">
-    <legend class="font-semibold">Thông tin vận đơn</legend>
-
-<div>
-  <label class="block font-medium mb-1">BILL NO</label>
-  <input type="text" name="BILL NO" class="w-full border rounded px-2 py-1"/>
-</div>
-
-<div>
-  <label class="block font-medium mb-1">BILL DATE</label>
-  <input type="date" name="BILL DATE" class="w-full border rounded px-2 py-1"/>
-</div>
-
-<div>
-  <label class="block font-medium mb-1">PACKAGES</label>
-  <input type="number" name="PACKAGES" class="w-full border rounded px-2 py-1"/>
-</div>
-
-<div>
-  <label class="block font-medium mb-1">GW</label>
-  <input type="number" name="GW" class="w-full border rounded px-2 py-1"/>
-</div>
-
-<div>
-  <label class="block font-medium mb-1">CBM</label>
-  <input type="number" name="CBM" class="w-full border rounded px-2 py-1"/>
-</div>
-
-<div>
-  <label class="block font-medium mb-1">CTN NO</label>
-  <input type="text" name="CTN NO" class="w-full border rounded px-2 py-1"/>
-</div>
-
-<div>
-  <label class="block font-medium mb-1">ETA DATE</label>
-  <input type="date" name="ETA DATE" class="w-full border rounded px-2 py-1"/>
-</div>
-
-<div>
-  <label class="block font-medium mb-1">ATC</label>
-  <input type="date" name="ATC" class="w-full border rounded px-2 py-1"/>
-</div>
-
-  </fieldset>
-
-  <!-- Thông tin hóa đơn -->
-
-  <fieldset class="border p-4 space-y-2">
-    <legend class="font-semibold">Thông tin hóa đơn</legend>
-
-<div>
-  <label class="block font-medium mb-1">INV NO</label>
-  <input type="text" name="INV NO" class="w-full border rounded px-2 py-1"/>
-</div>
-
-<div>
-  <label class="block font-medium mb-1">INV DATE</label>
-  <input type="date" name="INV DATE" class="w-full border rounded px-2 py-1"/>
-</div>
-
-<div>
-  <label class="block font-medium mb-1">AMOUNT</label>
-  <input type="text" name="AMOUNT" class="w-full border rounded px-2 py-1"/>
-</div>
-
-<div>
-  <label class="block font-medium mb-1">TERM</label>
-  <select name="TERM" class="w-full border rounded px-2 py-1">
-    <option></option>
-    <option>CIF</option>
-    <option>FOB</option>
-    <option>C&F</option>
-    <option>FCA</option>
-    <option>EXW</option>
-    <option>CPT</option>
-    <option>DAT</option>
-    <option>DAP</option>
-    <option>CIP</option>
-  </select>
-</div>
-
-<div>
-  <label class="block font-medium">File PDF</label>
-  <input type="file" id="pdfFile" class="w-full border rounded px-2 py-1"/>
-</div>
-
-  </fieldset>
-
-
-  <div class="md:col-span-3">
-    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded w-full md:w-auto">
-      Lưu
-    </button>
-   </div>
-</form>
-
-<!-- Thông báo kết quả -->
-<div id="addResult" class="mt-4 hidden bg-green-50 border border-green-400 p-4 rounded text-green-700"></div>
-
-<!-- Nút xem bảng và export -->
-<div class="mt-2 hidden" id="showTableBtn">
-  <button onclick="showTable()" class="text-blue-600 underline hover:text-blue-800">👉 Xem toàn bộ danh sách lô hàng</button>
-</div>
-
-<div class="mt-4 flex flex-wrap gap-2">
-  <button onclick="exportCsv()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">📤 Xuất toàn bộ CSV</button>
-  <button onclick="exportAtcEmptyCsv()" class="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700">📤 Xuất ATC trống CSV</button>
-</div>
+    <div class="mt-4 flex flex-wrap gap-2">
+      <button onclick="exportCsv()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">📤 Xuất toàn bộ CSV</button>
+      <button onclick="exportAtcEmptyCsv()" class="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700">📤 Xuất ATC trống CSV</button>
+    </div>
     
-  <!-- Tìm kiếm -->
+    <!-- Tìm kiếm -->
     <div class="mt-4 flex items-center gap-2">
-      <label for="searchDecNo" class="font-medium">Tìm theo DEC NO:</label>
-      <input id="searchDecNo" type="text" placeholder="Nhập DEC NO..." class="p-2 border border-gray-400 rounded w-full md:w-1/3" oninput="filterTableByDecNo()">
+      <label for="searchDecNo" class="font-medium">Tìm theo DEC_NO:</label>
+      <input id="searchDecNo" type="text" placeholder="Nhập DEC_NO..." class="p-2 border border-gray-400 rounded w-full md:w-1/3" oninput="filterTableByDecNo()">
     </div>
     
     <!-- Bảng dữ liệu -->
@@ -217,18 +191,22 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbx6L14HogiA7iiwCwApgI7k
 let editingIndex = -1;
 let fullData = [];
 
+// Helper: Chuyển tên trường từ trước (có dấu cách) sang snake_case
+function mapFieldName(field) {
+  // Nếu bạn chuyển tên trường ở backend, hãy đồng bộ tên trường ở đây với backend!
+  return field.replace(/ /g, "_");
+}
+
 async function fetchData() {
   try {
     const res = await fetch(API_URL);
     fullData = await res.json();
     renderTable(fullData);
     document.getElementById('dataTable').classList.remove('hidden');
-    document.getElementById('showTableBtn').classList.add('hidden');
   } catch (err) {
     console.error("❌ Lỗi khi fetch dữ liệu:", err);
   }
 }
-
 
 function renderTable(data) {
   const container = document.getElementById('dataTable');
@@ -249,24 +227,19 @@ function renderTable(data) {
         const d = new Date(value);
         if (!isNaN(d.getTime())) value = d.toLocaleDateString('vi-VN');
       }
-      return `<td class='border px-2 py-1'>${value}</td>`;
+      return `<td class='border px-2 py-1'>${value || ''}</td>`;
     }).join('');
     const actions = `<td class='border px-2 py-1 text-center'>
       <button onclick="editRow(${i})" class="text-blue-600 hover:underline">Sửa</button> |
       <button onclick="deleteRow(${i + 2})" class="text-red-600 hover:underline">Xoá</button>
     </td>`;
-    return `<tr>${cells}${actions}</tr>`;
+    return `<tr ${editingIndex === i ? 'class="editing-row"' : ''}>${cells}${actions}</tr>`;
   }).join('');
 
   table.innerHTML = `${thead}<tbody>${tbody}</tbody>`;
   container.innerHTML = '';
   container.appendChild(table);
 }
-
-let originalRowData = {};
-
-  
-
 
 function editRow(index) {
   editingIndex = index;
@@ -281,27 +254,20 @@ function editRow(index) {
     const input = form.querySelector(`[name="${header}"]`);
     if (input) {
       let value = cells[i].innerText;
-
-      // Kiểm tra nếu là input type="date" thì chuyển định dạng về yyyy-mm-dd
-     if (input.type === "date" && value) {
-  const parts = value.split(/[\/\-]/);
-  if (parts.length === 3) {
-    let day, month, year;
-
-    if (value.includes('/')) {
-      [day, month, year] = parts;
-    } else {
-      // Trường hợp ngày đã là yyyy-mm-dd hoặc yyyy/mm/dd
-      [year, month, day] = parts;
-    }
-
-    // Kiểm tra hợp lệ
-    if (year.length === 4 && month.length <= 2 && day.length <= 2) {
-      value = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    }
-  }
-}
-
+      if (input.type === "date" && value) {
+        const parts = value.split(/[\/\-]/);
+        if (parts.length === 3) {
+          let day, month, year;
+          if (value.includes('/')) {
+            [day, month, year] = parts;
+          } else {
+            [year, month, day] = parts;
+          }
+          if (year.length === 4 && month.length <= 2 && day.length <= 2) {
+            value = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+          }
+        }
+      }
       input.value = value;
     }
   });
@@ -314,39 +280,6 @@ function editRow(index) {
   setFormDisabled(false);
 }
 
-  function handleUpdate() {
-  const form = document.getElementById("importForm");
-  const inputs = form.querySelectorAll("input, select, textarea"); // tất cả trường dữ liệu
-
-  const updatedData = {};
-  inputs.forEach(input => {
-    const key = input.name;
-    const value = input.value.trim();
-    // Nếu input trống, dùng lại dữ liệu gốc
-    updatedData[key] = value || originalRowData[key] || "";
-  });
-    if (currentEditingRow) {
-    currentEditingRow.classList.remove("editing-row");
-    currentEditingRow = null;
-  }
-
-  // Gửi dữ liệu này lên API, ví dụ:
-  fetch(API_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "update",
-      rowIndex: editingIndex + 2,
-      data: updatedData
-    }),
-    headers: {
-      "Content-Type": "application/json"
-    }
-  }).then(response => {
-    // Xử lý sau cập nhật...
-  });
-}
-
-
 async function deleteRow(index) {
   if (!confirm('Bạn có chắc chắn muốn xoá dòng này?')) return;
 
@@ -356,7 +289,7 @@ async function deleteRow(index) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         action: 'delete',
-        rowIndex: index
+        index: index // Thống nhất dùng 'index'
       })
     });
     const result = await res.json();
@@ -364,23 +297,55 @@ async function deleteRow(index) {
     document.getElementById('addResult').classList.remove('hidden');
     document.getElementById('addResult').innerText = result.message || '🗑 Xoá thành công';
     fetchData(); // Refresh table
+    setFormDisabled(true);
   } catch (error) {
     alert('Có lỗi khi xoá dữ liệu!');
     console.error(error);
   }
 }
 
-
 function showTable() {
   fetchData();
 }
 
+function filterTableByDecNo() {
+  const keyword = document.getElementById('searchDecNo').value.trim().toLowerCase();
+  const filtered = fullData.filter(row => ((row["DEC_NO"] || '') + '').toLowerCase().includes(keyword));
+  renderTable(filtered);
+}
+
+// Tự động fetch khi tải trang và khoá form
+window.onload = () => {
+  fetchData();
+  setFormDisabled(true);
+};
+
+function setFormDisabled(disabled) {
+  const form = document.getElementById('importForm');
+  const elements = form.querySelectorAll('input, select, textarea, button[type="submit"]');
+  elements.forEach(el => {
+    if (el.type !== 'button') el.disabled = disabled;
+  });
+}
+
+// Nút "Thêm mới"
+document.getElementById('addNewBtn').addEventListener('click', () => {
+  editingIndex = -1;
+  document.getElementById('importForm').reset();
+  setFormDisabled(false);
+  document.getElementById('addResult').classList.add('hidden');
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+// Sự kiện submit form (thêm mới & cập nhật)
 const form = document.getElementById('importForm');
 form.onsubmit = async e => {
   e.preventDefault();
   const formData = new FormData(form);
   const obj = {};
-  formData.forEach((v, k) => { if (k !== 'pdfFile') obj[k] = v });
+  formData.forEach((v, k) => {
+    if (k !== 'pdfFile') obj[k] = v;
+  });
 
   const resultDiv = document.getElementById('addResult');
   if (editingIndex > -1) {
@@ -399,50 +364,12 @@ form.onsubmit = async e => {
   }
   resultDiv.classList.remove('hidden');
   form.reset();
+  setFormDisabled(true); // Khóa lại form
   fetchData();
 };
 
-function filterTableByDecNo() {
-  const keyword = document.getElementById('searchDecNo').value.trim().toLowerCase();
-  const filtered = fullData.filter(row => (row["DEC NO"] || '').toLowerCase().includes(keyword));
-  renderTable(filtered);
-}
-
-// Tự động fetch khi tải trang
-window.onload = () => {
-  fetchData();
-};
-
-/*function exportCsv() {
-  let csv = '';
-  const headers = Object.keys(fullData[0]);
-  csv += headers.join(',') + '\n';
-  fullData.forEach(row => {
-    csv += headers.map(h => `"${row[h] || ''}"`).join(',') + '\n';
-  });
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = 'danhsach_lohang.csv';
-  link.click();
-}
-
-function exportAtcEmptyCsv() {
-  const filtered = fullData.filter(row => !row["ATC"]);
-  let csv = '';
-  const headers = Object.keys(filtered[0] || {});
-  csv += headers.join(',') + '\n';
-  filtered.forEach(row => {
-    csv += headers.map(h => `"${row[h] || ''}"`).join(',') + '\n';
-  });
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = 'lohang_chua_atc.csv';
-  link.click();
-}*/
-
-  async function exportCsv() {
+// Export CSV toàn bộ
+async function exportCsv() {
   const res = await fetch(API_URL, {
     method: 'POST',
     body: JSON.stringify({ action: 'exportCsv' })
@@ -451,6 +378,7 @@ function exportAtcEmptyCsv() {
   if (result.url) window.open(result.url, '_blank');
 }
 
+// Export CSV chỉ những dòng ATC trống
 async function exportAtcEmptyCsv() {
   const res = await fetch(API_URL, {
     method: 'POST',
@@ -460,59 +388,7 @@ async function exportAtcEmptyCsv() {
   if (result.url) window.open(result.url, '_blank');
 }
 
-
-  // 🆕 Khoá/mở form
-function setFormDisabled(disabled) {
-  const form = document.getElementById('importForm');
-  const elements = form.querySelectorAll('input, select, textarea, button[type="submit"]');
-  elements.forEach(el => {
-    if (el.type !== 'button') el.disabled = disabled;
-  });
-}
-
-// 🆕 Nút "Thêm mới"
-document.getElementById('addNewBtn').addEventListener('click', () => {
-  editingIndex = -1;
-  document.getElementById('importForm').reset();
-  setFormDisabled(false);
-  document.getElementById('addResult').classList.add('hidden');
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
-
-// 🆕 Sửa lại sự kiện submit form
-form.onsubmit = async e => {
-  e.preventDefault();
-  const formData = new FormData(form);
-  const obj = {};
-  formData.forEach((v, k) => { if (k !== 'pdfFile') obj[k] = v });
-
-  const resultDiv = document.getElementById('addResult');
-  if (editingIndex > -1) {
-    await fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'update', index: editingIndex + 2, data: obj })
-    });
-    resultDiv.innerHTML = `<p class="font-bold text-blue-700">✅ Cập nhật thành công dòng ${editingIndex + 2}!</p>`;
-    editingIndex = -1;
-  } else {
-    await fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'add', data: obj })
-    });
-    resultDiv.innerHTML = `<p class="font-bold text-green-700">✅ Thêm dòng mới thành công!</p>`;
-  }
-
-  resultDiv.classList.remove('hidden');
-  form.reset();
-  setFormDisabled(true); // 🆕 khóa lại form
-  fetchData();
-};
-
-// 🆕 Khóa form khi vừa vào trang
-window.onload = () => {
-  fetchData();
-  setFormDisabled(true);
-};
+// Note: Xử lý upload file PDF chưa làm! Nếu muốn upload file bạn cần code thêm ở đây.
 
 </script>
 </body>
