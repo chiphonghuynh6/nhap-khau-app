@@ -389,6 +389,41 @@ async function exportAtcEmptyCsv() {
   if (result.url) window.open(result.url, '_blank');
 }
 
+  document.getElementById("importForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const formData = new FormData(this);
+  const data = {};
+  formData.forEach((value, key) => {
+    data[key] = value;
+  });
+
+  // Nếu đang chỉnh sửa
+  if (editingIndex !== -1) {
+    data.rowIndex = editingIndex + 2; // dòng Google Sheet bắt đầu từ 2 (bỏ dòng tiêu đề)
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'update', data }),
+    });
+    const result = await res.text();
+
+    document.getElementById("addResult").innerHTML = `<p class="text-green-700 font-bold">✅ Đã cập nhật dòng ${editingIndex + 2}!</p>`;
+  } else {
+    // Thêm mới
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'add', data }),
+    });
+    const result = await res.text();
+
+    document.getElementById("addResult").innerHTML = `<p class="text-green-700 font-bold">✅ Đã thêm dòng mới!</p>`;
+  }
+
+  document.getElementById("addResult").classList.remove("hidden");
+  this.reset();
+  editingIndex = -1;
+  fetchData(); // cập nhật lại bảng
+});
+
 // Note: Xử lý upload file PDF chưa làm! Nếu muốn upload file bạn cần code thêm ở đây.
 
 </script>
