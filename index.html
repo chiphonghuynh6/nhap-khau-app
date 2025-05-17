@@ -270,13 +270,7 @@ function editRow(index) {
   setFormDisabled(false);
 }
 
-  const resultDiv = document.getElementById('addResult');
-  resultDiv.innerHTML = `<p class="font-bold text-yellow-700">🛠 Đang chỉnh sửa dòng ${index + 2}...</p>`;
-  resultDiv.classList.remove('hidden');
-  window.scrollTo({ top: 0, behavior: "smooth" });
 
-  setFormDisabled(false);
-}
 
 async function deleteRow(index) {
   if (!confirm('Bạn có chắc chắn muốn xoá dòng này?')) return;
