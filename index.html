@@ -187,7 +187,7 @@
   </div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbwsRrR0feiHPFUIN2pZeoLHa5SzTMXiE_nKtzEVBsOeicmOLmShC6Uzckr9-fpJHwK4/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbyv4E1dLtEpRxdmS7cSbcnzP-SmFfZVA9qwXtmJBeGXhGAdMk5Vu-diJS2OObarvmc5/exec';
 let editingIndex = -1;
 let fullData = [];
 
@@ -244,33 +244,41 @@ function renderTable(data) {
 function editRow(index) {
   editingIndex = index;
   const rowData = fullData[index];
-  const form = document.getElementById("importForm");
+  form.onsubmit = async e => {
+  e.preventDefault();
+  const formData = new FormData(form);
 
-  // Lấy toàn bộ input/select trong form
-  form.querySelectorAll('input[name], select[name], textarea[name]').forEach(input => {
-    // Tìm key trong rowData: thử theo name, hoặc thay _ thành dấu cách
-    let field = input.name;
-    let value = rowData[field];
-    if (typeof value === "undefined") {
-      // Thử thay _ thành dấu cách để map ngược
-      const altField = field.replace(/_/g, " ");
-      value = rowData[altField];
-    }
-    if (typeof value === "undefined") value = "";
-    // Nếu là input date, chuẩn hóa yyyy-mm-dd
-    if (input.type === "date" && value) {
-      let dateValue = value;
-      if (/^\d{4}-\d{2}-\d{2}/.test(value)) {
-        dateValue = value.slice(0, 10);
-      } else if (/^\d{2}\/\d{2}\/\d{4}$/.test(value)) {
-        const [day, month, year] = value.split("/");
-        dateValue = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-      }
-      input.value = dateValue;
+  if (editingIndex > -1) {
+    formData.append('action', 'update');
+    formData.append('index', editingIndex + 2);
+  } else {
+    formData.append('action', 'add');
+  }
+
+  const resultDiv = document.getElementById('addResult');
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      body: formData
+    });
+    const result = await res.json();
+
+    if (result.error) {
+      resultDiv.innerHTML = `<p class="font-bold text-red-700">❌ Lỗi: ${result.error}</p>`;
     } else {
-      input.value = value;
+      resultDiv.innerHTML = `<p class="font-bold text-green-700">✅ ${result.message}</p>`;
+      form.reset();
+      editingIndex = -1;
+      setFormDisabled(true);
+      fetchData();
     }
-  });
+  } catch (error) {
+    resultDiv.innerHTML = `<p class="font-bold text-red-700">❌ Lỗi gửi dữ liệu: ${error.message}</p>`;
+  }
+
+  resultDiv.classList.remove('hidden');
+};
+
 
   const resultDiv = document.getElementById('addResult');
   resultDiv.innerHTML = `<p class="font-bold text-yellow-700">🛠 Đang chỉnh sửa dòng ${index + 2}...</p>`;
