@@ -217,13 +217,13 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbx6L14HogiA7iiwCwApgI7k
 let editingIndex = -1;
 let fullData = [];
 
-/*async function fetchData() {
+async function fetchData() {
   const res = await fetch(API_URL);
   fullData = await res.json();
   renderTable(fullData);
   document.getElementById('dataTable').classList.remove('hidden');
   document.getElementById('showTableBtn').classList.add('hidden');
-}*/
+}
 
 function renderTable(data) {
   const container = document.getElementById('dataTable');
