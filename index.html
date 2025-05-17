@@ -183,8 +183,40 @@
 
     
     <!-- Bảng dữ liệu -->
-    <div id="dataTable" class="overflow-x-auto mt-6 bg-white rounded shadow p-4"></div>
-  </div>
+    <div id="dataTable" class="overflow-x-auto mt-6 bg-white rounded shadow p-4">
+  <table class="min-w-full text-sm text-left border">
+    <thead class="bg-gray-100 font-semibold">
+      <tr>
+        <th class="border px-2 py-1">GET_DOCS</th>
+        <th class="border px-2 py-1">DEC_NO</th>
+        <th class="border px-2 py-1">FACT_NO</th>
+        <th class="border px-2 py-1">LOAI_HINH</th>
+        <th class="border px-2 py-1">TYPE</th>
+        <th class="border px-2 py-1">FWD</th>
+        <th class="border px-2 py-1">SUPPLIER</th>
+        <th class="border px-2 py-1">ORIGIN</th>
+        <th class="border px-2 py-1">BILL_NO</th>
+        <th class="border px-2 py-1">BILL_DATE</th>
+        <th class="border px-2 py-1">PACKAGES</th>
+        <th class="border px-2 py-1">GW</th>
+        <th class="border px-2 py-1">CBM</th>
+        <th class="border px-2 py-1">CTN_NO</th>
+        <th class="border px-2 py-1">ETA_DATE</th>
+        <th class="border px-2 py-1">ATC</th>
+        <th class="border px-2 py-1">INV_NO</th>
+        <th class="border px-2 py-1">INV_DATE</th>
+        <th class="border px-2 py-1">AMOUNT</th>
+        <th class="border px-2 py-1">TERM</th>
+        <th class="border px-2 py-1">Remarks</th>
+        <th class="border px-2 py-1">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      <!-- Dữ liệu sẽ được chèn tại đây -->
+    </tbody>
+  </table>
+</div>
+
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbyyvPf2hF9SQE8LsIZzvdPpJO4EiMc9iSw1SKvy25_WjLrKoCZNXd5_X8dqf16Y1Z-n/exec";
