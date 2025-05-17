@@ -246,26 +246,29 @@ function editRow(index) {
   const rowData = fullData[index];
   const form = document.getElementById("importForm");
 
-  // Đổ dữ liệu vào form
-  Object.keys(rowData).forEach(field => {
-    const input = form.querySelector(`[name="${field}"]`);
-    if (input) {
-      let value = rowData[field];
-      if (input.type === "date" && value) {
-        // Chuẩn hóa sang yyyy-mm-dd nếu là ngày ISO hoặc dd/mm/yyyy
-        let dateValue = value;
-        if (/^\d{4}-\d{2}-\d{2}/.test(value)) {
-          // Nếu là ISO, lấy 10 ký tự đầu
-          dateValue = value.slice(0, 10);
-        } else if (/^\d{2}\/\d{2}\/\d{4}$/.test(value)) {
-          // Nếu là dd/mm/yyyy
-          const [day, month, year] = value.split("/");
-          dateValue = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-        }
-        input.value = dateValue;
-      } else {
-        input.value = value || "";
+  // Lấy toàn bộ input/select trong form
+  form.querySelectorAll('input[name], select[name], textarea[name]').forEach(input => {
+    // Tìm key trong rowData: thử theo name, hoặc thay _ thành dấu cách
+    let field = input.name;
+    let value = rowData[field];
+    if (typeof value === "undefined") {
+      // Thử thay _ thành dấu cách để map ngược
+      const altField = field.replace(/_/g, " ");
+      value = rowData[altField];
+    }
+    if (typeof value === "undefined") value = "";
+    // Nếu là input date, chuẩn hóa yyyy-mm-dd
+    if (input.type === "date" && value) {
+      let dateValue = value;
+      if (/^\d{4}-\d{2}-\d{2}/.test(value)) {
+        dateValue = value.slice(0, 10);
+      } else if (/^\d{2}\/\d{2}\/\d{4}$/.test(value)) {
+        const [day, month, year] = value.split("/");
+        dateValue = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
       }
+      input.value = dateValue;
+    } else {
+      input.value = value;
     }
   });
 
