@@ -283,28 +283,34 @@ function editRow(index) {
 
 
 async function deleteRow(index) {
-  if (!confirm('Bạn có chắc chắn muốn xoá dòng này?')) return;
+  if (!confirm(`Bạn có chắc chắn muốn xoá dòng ${index}?`)) return;
 
   try {
-    const res = await fetch(API_URL, {
+    const response = await fetch(API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         action: 'delete',
-        index: index // Thống nhất dùng 'index'
-      })
+        rowIndex: index  // Dòng cần xoá (chỉ số bắt đầu từ 2 vì dòng 1 là header)
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
-    const result = await res.json();
 
-    document.getElementById('addResult').classList.remove('hidden');
-    document.getElementById('addResult').innerText = result.message || '🗑 Xoá thành công';
-    fetchData(); // Refresh table
-    setFormDisabled(true);
-  } catch (error) {
-    alert('Có lỗi khi xoá dữ liệu!');
-    console.error(error);
+    const result = await response.json();
+
+    if (result.success) {
+      alert(`✅ Đã xoá dòng ${index} thành công.`);
+      fetchData(); // Tải lại dữ liệu mới
+    } else {
+      alert(`❌ Xoá không thành công: ${result.message || 'Lỗi không xác định.'}`);
+    }
+  } catch (err) {
+    console.error("Lỗi khi xoá:", err);
+    alert("❌ Đã xảy ra lỗi khi kết nối để xoá.");
   }
 }
+
 
 function showTable() {
   fetchData();
