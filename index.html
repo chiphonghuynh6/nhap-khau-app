@@ -218,12 +218,17 @@ let editingIndex = -1;
 let fullData = [];
 
 async function fetchData() {
-  const res = await fetch(API_URL);
-  fullData = await res.json();
-  renderTable(fullData);
-  document.getElementById('dataTable').classList.remove('hidden');
-  document.getElementById('showTableBtn').classList.add('hidden');
+  try {
+    const res = await fetch(API_URL);
+    fullData = await res.json();
+    renderTable(fullData);
+    document.getElementById('dataTable').classList.remove('hidden');
+    document.getElementById('showTableBtn').classList.add('hidden');
+  } catch (err) {
+    console.error("❌ Lỗi khi fetch dữ liệu:", err);
+  }
 }
+
 
 function renderTable(data) {
   const container = document.getElementById('dataTable');
